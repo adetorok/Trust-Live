@@ -38,12 +38,12 @@ const Navbar = () => {
               >
                 Sites / Vendors
               </Link>
-              <a 
-                href="/#contact" 
+              <Link 
+                to="/#contact" 
                 className="bg-teal-600 text-white px-4 py-2 rounded-md text-sm font-bold hover:bg-teal-700 transition"
               >
                 Request Proposal
-              </a>
+              </Link>
             </div>
           </div>
         </div>
