@@ -50,14 +50,14 @@ const Home = () => {
     }
   };
 
-  const handleFormSuccess = (email) => {
-    setSuccessEmail(email);
-    setShowForm(false);
-  };
-
-  const handleRequestProposal = (type) => {
+  const handleFormSubmit = (type) => {
     setFormType(type);
     setShowForm(true);
+  };
+
+  const handleSuccess = (email) => {
+    setSuccessEmail(email);
+    setShowForm(false);
   };
 
   // Handle scroll to contact section when URL hash is #contact
@@ -85,316 +85,437 @@ const Home = () => {
   return (
     <div className="text-slate-800">
       {/* Hero Section */}
-      <section id="hero" className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-16 lg:mb-24 px-4 sm:px-6 lg:px-8">
-        <div className="order-2 lg:order-1">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-500 mb-2 text-center lg:text-left">
-            We Are The ...
-          </h2>
-          <div className="relative w-full min-h-[300px] sm:min-h-[400px] md:min-h-[500px]">
-            {/* Power Words */}
-            <div className="bubble absolute flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full z-0" style={{top: '5%', left: '15%', animationDelay: '-2s', animationDuration: '18s'}}>
-              <span className="font-bold text-slate-500">Elite</span>
+      <section className="bg-gradient-to-br from-teal-50 via-white to-blue-50 py-16 sm:py-20 lg:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12 lg:mb-16">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6">
+                Accelerate Your Clinical Trial
+                <span className="block text-teal-600">Recruitment Success</span>
+              </h1>
+              <p className="text-xl sm:text-2xl text-slate-600 mb-8 max-w-4xl mx-auto leading-relaxed">
+                TRACS specializes in <strong>high-touch, human-first patient recruitment</strong> that delivers 
+                qualified participants to your clinical trials faster than traditional digital-only approaches.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={() => handleFormSubmit('sponsor')}
+                  className="bg-teal-600 text-white font-bold px-8 py-4 rounded-lg text-lg hover:bg-teal-700 transition-colors shadow-lg"
+                >
+                  Get Sponsor Proposal
+                </button>
+                <button
+                  onClick={() => handleFormSubmit('site')}
+                  className="bg-white text-teal-600 border-2 border-teal-600 font-bold px-8 py-4 rounded-lg text-lg hover:bg-teal-50 transition-colors shadow-lg"
+                >
+                  Get Site Proposal
+                </button>
+              </div>
             </div>
-            <div className="bubble absolute flex items-center justify-center w-14 h-14 bg-slate-100 rounded-full z-0" style={{top: '70%', left: '5%', animationDelay: '-5s', animationDuration: '20s'}}>
-              <span className="font-bold text-slate-500">Apex</span>
-            </div>
-            <div className="bubble absolute flex items-center justify-center w-20 h-20 bg-slate-100 rounded-full z-0" style={{top: '10%', right: '10%', animationDelay: '-8s', animationDuration: '16s'}}>
-              <span className="font-bold text-slate-500">Gold</span>
-            </div>
-            <div className="bubble absolute flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full z-0" style={{bottom: '5%', right: '25%', animationDelay: '-1s', animationDuration: '22s'}}>
-              <span className="font-bold text-slate-500">Prime</span>
-            </div>
-            <div className="bubble absolute flex items-center justify-center w-12 h-12 bg-slate-100 rounded-full z-0" style={{top: '45%', right: '5%', animationDelay: '-10s', animationDuration: '19s'}}>
-              <span className="font-bold text-slate-500">Core</span>
-            </div>
-            <div className="bubble absolute flex items-center justify-center w-14 h-14 bg-slate-100 rounded-full z-0" style={{bottom: '15%', left: '35%', animationDelay: '-7s', animationDuration: '17s'}}>
-              <span className="font-bold text-slate-500">Peak</span>
-            </div>
-            
-            {/* Vendor Bubbles */}
-            <div data-tooltip="Sponsors (Pharma, Biotech, Device, etc.)" className="bubble absolute flex items-center justify-center w-40 h-40 bg-teal-200 rounded-full shadow-lg z-20" style={{top: '20%', left: '25%', animationDelay: '-1s', animationDuration: '20s'}}>
-              <span className="text-3xl font-extrabold text-teal-800">Sponsor</span>
-              <div className="tooltip absolute -top-10 bg-slate-800 text-white text-xs rounded py-1 px-2">Sponsors (Pharma, Biotech, etc.)</div>
-            </div>
-            <div data-tooltip="Independent Clinical Research Site" className="bubble absolute flex items-center justify-center w-36 h-36 bg-white border-2 border-teal-300 rounded-full shadow-lg z-20" style={{top: '55%', left: '50%', animationDelay: '-3s', animationDuration: '18s'}}>
-              <span className="text-3xl font-extrabold text-teal-800">Site</span>
-              <div className="tooltip absolute -top-10 bg-slate-800 text-white text-xs rounded py-1 px-2">Independent Clinical Research Site</div>
-            </div>
-            <div data-tooltip="Contract Research Organization" className="bubble absolute flex items-center justify-center w-32 h-32 bg-teal-100 rounded-full shadow-lg z-20" style={{top: '50%', left: '10%', animationDelay: '-2.5s', animationDuration: '22s'}}>
-              <span className="text-2xl font-extrabold text-teal-800">CRO</span>
-              <div className="tooltip absolute -top-10 bg-slate-800 text-white text-xs rounded py-1 px-2">Contract Research Organization</div>
-            </div>
-            <div data-tooltip="Academic Medical Center" className="bubble absolute flex items-center justify-center w-28 h-28 bg-white border border-teal-200 rounded-full shadow-md z-10" style={{top: '5%', left: '55%', animationDelay: '-4s', animationDuration: '19s'}}>
-              <span className="text-2xl font-bold text-teal-700">AMC</span>
-              <div className="tooltip absolute -top-10 bg-slate-800 text-white text-xs rounded py-1 px-2">Academic Medical Center</div>
-            </div>
-            <div data-tooltip="Site Management Organization" className="bubble absolute flex items-center justify-center w-24 h-24 bg-white border border-teal-200 rounded-full shadow-md z-10" style={{bottom: '10%', left: '20%', animationDelay: '-6s', animationDuration: '21s'}}>
-              <span className="text-xl font-bold text-teal-700">SMO</span>
-              <div className="tooltip absolute -top-10 bg-slate-800 text-white text-xs rounded py-1 px-2">Site Management Organization</div>
-            </div>
-            <div data-tooltip="Patient Recruitment Vendor" className="bubble absolute flex items-center justify-center w-24 h-24 bg-teal-50 rounded-full shadow-sm z-10" style={{top: '35%', right: '15%', animationDelay: '-7s', animationDuration: '23s'}}>
-              <span className="text-xl font-bold text-teal-700">PRV</span>
-              <div className="tooltip absolute -top-10 bg-slate-800 text-white text-xs rounded py-1 px-2">Patient Recruitment Vendor</div>
-            </div>
-            <div data-tooltip="Hospitals and Health Systems" className="bubble absolute flex items-center justify-center w-20 h-20 bg-teal-50 rounded-full shadow-sm z-10" style={{bottom: '25%', right: '5%', animationDelay: '-9s', animationDuration: '17s'}}>
-              <span className="text-lg font-medium text-teal-600">HS</span>
-              <div className="tooltip absolute -top-10 bg-slate-800 text-white text-xs rounded py-1 px-2">Hospitals & Health Systems</div>
-            </div>
-            <div data-tooltip="Principal Investigator–led Sites" className="bubble absolute flex items-center justify-center w-20 h-20 bg-teal-50 rounded-full shadow-sm z-10" style={{top: '75%', left: '30%', animationDelay: '-1.5s', animationDuration: '19s'}}>
-              <span className="text-lg font-medium text-teal-600">PI Sites</span>
-              <div className="tooltip absolute -top-10 bg-slate-800 text-white text-xs rounded py-1 px-2">Physician-led Sites</div>
-            </div>
-            <div data-tooltip="Institutional Review Board / Ethics Committee" className="bubble absolute flex items-center justify-center w-20 h-20 bg-white border border-teal-200 rounded-full shadow-sm z-10" style={{top: '15%', left: '0%', animationDelay: '-3.5s', animationDuration: '25s'}}>
-              <span className="text-lg font-medium text-teal-600">IRB/EC</span>
-              <div className="tooltip absolute -top-10 bg-slate-800 text-white text-xs rounded py-1 px-2">Institutional Review Board</div>
+
+            {/* Key Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+              <div className="text-center bg-white p-6 rounded-xl shadow-lg">
+                <div className="text-4xl font-bold text-teal-600 mb-2">3x</div>
+                <div className="text-slate-600 font-medium">Higher Enrollment Rate</div>
+              </div>
+              <div className="text-center bg-white p-6 rounded-xl shadow-lg">
+                <div className="text-4xl font-bold text-teal-600 mb-2">50%</div>
+                <div className="text-slate-600 font-medium">Reduction in Screen Failures</div>
+              </div>
+              <div className="text-center bg-white p-6 rounded-xl shadow-lg">
+                <div className="text-4xl font-bold text-teal-600 mb-2">24h</div>
+                <div className="text-slate-600 font-medium">Average Response Time</div>
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div id="contact" className="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-slate-200 order-1 lg:order-2">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight mb-4 text-center lg:text-left">
-            Study Subject Recruiter
-          </h1>
-          
-          {!showForm && !successEmail && (
-            <div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Request a Proposal</h2>
-              <div className="space-y-4">
-                <button
-                  onClick={() => handleRequestProposal('sponsor')}
-                  className="w-full bg-teal-600 text-white font-semibold py-3 rounded-md hover:bg-teal-700 transition-colors shadow-sm"
-                >
-                  I'm a Sponsor / CRO
-                </button>
-                <button
-                  onClick={() => handleRequestProposal('site')}
-                  className="w-full bg-white text-teal-600 border border-teal-600 font-semibold py-3 rounded-md hover:bg-teal-50 transition-colors shadow-sm"
-                >
-                  I'm a Site / Vendor
-                </button>
-              </div>
-            </div>
-          )}
-          
-          {showForm && !successEmail && (
-            <div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">
-                {formType === 'sponsor' ? 'Sponsor Quote Request' : 'Site Quote Request'}
-              </h2>
-              {formType === 'sponsor' ? (
-                <FormSponsorQuote onSuccess={handleFormSuccess} />
-              ) : (
-                <FormSiteQuote onSuccess={handleFormSuccess} />
-              )}
-              <button
-                onClick={() => setShowForm(false)}
-                className="mt-4 text-slate-600 hover:text-slate-800"
-              >
-                ← Back to options
-              </button>
-            </div>
-          )}
-          
-          {successEmail && (
-            <div className="text-center py-8">
-              <div className="flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-600 mx-auto mb-4">
-                <span className="text-4xl">✓</span>
-              </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Thank You!</h3>
-              <p className="text-slate-600">
-                Your request has been received. Please check your email for a verification link to access your tailored proposal.
-              </p>
-              <button
-                onClick={() => {
-                  setSuccessEmail('');
-                  setShowForm(false);
-                }}
-                className="mt-4 text-teal-600 hover:text-teal-800"
-              >
-                Submit another request
-              </button>
-            </div>
-          )}
         </div>
       </section>
 
-      {/* Services Section */}
-      <section id="services" className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900">The Difference is Clear:</h2>
-          <h3 className="text-2xl sm:text-3xl font-bold text-teal-700 mb-8 sm:mb-12">Why Our Approach Succeeds</h3>
-          <div className="flex flex-col items-center justify-center space-y-4 mb-8 sm:mb-12">
-            <div className="stop-sign bg-red-600 h-20 w-20 sm:h-24 sm:w-24 flex items-center justify-center shadow-lg">
-              <span className="text-white font-extrabold text-3xl sm:text-4xl">STOP</span>
+      {/* What We Do Section */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-6">
+                What We Do
+              </h2>
+              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+                We solve the #1 challenge in clinical trials: finding and enrolling the right patients quickly and efficiently.
+              </p>
             </div>
-            <p className="text-base sm:text-lg text-slate-600 max-w-2xl px-4">
-              ...relying on passive online marketing that delivers unqualified leads, no-shows, and frustration.
-            </p>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-6">
+                  We're Not Just Another Recruitment Vendor
+                </h3>
+                <div className="space-y-6">
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                      <span className="text-teal-600 font-bold">1</span>
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold text-slate-900 mb-2">Strategic Community Outreach</h4>
+                      <p className="text-slate-600">
+                        Our teams go directly to where your target patients are: community centers, 
+                        healthcare facilities, pharmacies, and medical practices. We build relationships 
+                        and trust through face-to-face interactions.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                      <span className="text-teal-600 font-bold">2</span>
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold text-slate-900 mb-2">Nurse-Led Pre-Screening</h4>
+                      <p className="text-slate-600">
+                        Every interested person is contacted by a licensed nurse who conducts thorough 
+                        pre-screening against your protocol criteria. This eliminates unqualified leads 
+                        before they reach your site.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start space-x-4">
+                    <div className="flex-shrink-0 w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                      <span className="text-teal-600 font-bold">3</span>
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-semibold text-slate-900 mb-2">Complete Project Management</h4>
+                      <p className="text-slate-600">
+                        We handle everything from IRB documentation to site coordination, ensuring 
+                        smooth enrollment and reducing your administrative burden.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="bg-slate-50 p-8 rounded-xl">
+                <h4 className="text-xl font-bold text-slate-900 mb-6 text-center">Our Process</h4>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                    <span className="text-slate-700">Identify target patient populations</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                    <span className="text-slate-700">Deploy community outreach teams</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                    <span className="text-slate-700">Conduct nurse-led pre-screening</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
+                    <span className="text-slate-700">Deliver qualified participants to sites</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-6 h-6 bg-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold">5</div>
+                    <span className="text-slate-700">Provide ongoing support and reporting</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
-          {/* The Old Way */}
-          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-slate-200">
-            <h4 className="text-xl sm:text-2xl font-bold text-slate-500 mb-6 text-center">The "Online-Only" Model</h4>
-            <ul className="space-y-4">
-              <li className="flex items-start">
-                <span className="text-2xl mr-4 text-red-500">&times;</span>
-                <div>
-                  <h5 className="font-semibold text-slate-800">Passive Digital Ads</h5>
-                  <p className="text-slate-600">Casts a wide, impersonal net, hoping the right people click. This approach ignores the human element of trust required for clinical trial participation.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <span className="text-2xl mr-4 text-red-500">&times;</span>
-                <div>
-                  <h5 className="font-semibold text-slate-800">Unvetted, Low-Quality Leads</h5>
-                  <p className="text-slate-600">Floods your site with contacts who may not be eligible, don't return calls, or misunderstand the commitment, leading to wasted effort.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <span className="text-2xl mr-4 text-red-500">&times;</span>
-                <div>
-                  <h5 className="font-semibold text-slate-800">High Site Burden & Frustration</h5>
-                  <p className="text-slate-600">Your coordinators spend countless hours chasing down ghosts and screening ineligible subjects, pulling them away from critical trial duties.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <span className="text-2xl mr-4 text-red-500">&times;</span>
-                <div>
-                  <h5 className="font-semibold text-slate-800">Disappointing Results</h5>
-                  <p className="text-slate-600">High cost-per-acquisition with low enrollment rates, putting your study timelines and budget at risk.</p>
-                </div>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Our Way */}
-          <div className="bg-teal-50/50 p-6 sm:p-8 rounded-xl shadow-lg border-2 border-teal-500">
-            <h4 className="text-xl sm:text-2xl font-bold text-teal-800 mb-6 text-center">Our High-Touch, Human-First Approach</h4>
-            <ul className="space-y-6">
-              <li className="flex items-start">
-                <span className="text-3xl mr-4 text-teal-600">1.</span>
-                <div>
-                  <h5 className="font-semibold text-slate-800">Step 1: Strategic "Boots-on-the-Ground" Outreach</h5>
-                  <p className="text-slate-600">We don't wait for subjects to find us; <span className="font-semibold">we go where they are</span>. Our teams target locations relevant to your protocol, engaging in one-on-one conversations at community centers, health clinics, hospitals, and pharmacies. We talk to doctors, distribute flyers, and answer questions in person, building the human trust that is essential for recruitment success.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <span className="text-3xl mr-4 text-teal-600">2.</span>
-                <div>
-                  <h5 className="font-semibold text-slate-800">Step 2: Rigorous Nurse-Led Pre-Screening</h5>
-                  <p className="text-slate-600">Every interested individual is contacted by a licensed nurse. This is not a call center; it's a clinical conversation. Our nurses confirm the indication, review inclusion/exclusion criteria, discuss medications, and check for necessary documentation like x-rays or reports. We stop screen failures before they ever reach your site.</p>
-                </div>
-              </li>
-              <li className="flex items-start">
-                <span className="text-2xl mr-4 text-green-500">✓</span>
-                <div>
-                  <h5 className="font-semibold text-slate-800">The Result: Quality & Predictability</h5>
-                  <p className="text-slate-600">Your site receives a steady stream of <span className="font-semibold">pre-qualified, genuinely interested, and engaged participants</span>. This dramatically reduces coordinator workload, accelerates enrollment, and provides predictable results for your trial.</p>
-                </div>
-              </li>
-            </ul>
+      </section>
+
+      {/* Problem/Solution Section */}
+      <section className="py-16 sm:py-20 bg-slate-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
+                The Problem We Solve
+              </h2>
+              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+                Clinical trial recruitment is broken. Here's how we fix it.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              {/* The Problem */}
+              <div className="bg-red-50 p-8 rounded-xl border-l-4 border-red-500">
+                <h3 className="text-2xl font-bold text-red-800 mb-6">❌ The Traditional Approach</h3>
+                <ul className="space-y-4">
+                  <li className="flex items-start space-x-3">
+                    <span className="text-red-500 text-xl">•</span>
+                    <span className="text-slate-700">Passive digital ads that cast a wide, impersonal net</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-red-500 text-xl">•</span>
+                    <span className="text-slate-700">High volume of unqualified leads and no-shows</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-red-500 text-xl">•</span>
+                    <span className="text-slate-700">Sites overwhelmed with screen failures</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-red-500 text-xl">•</span>
+                    <span className="text-slate-700">Missed enrollment targets and delayed timelines</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-red-500 text-xl">•</span>
+                    <span className="text-slate-700">Wasted time and resources on unqualified participants</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* The Solution */}
+              <div className="bg-green-50 p-8 rounded-xl border-l-4 border-green-500">
+                <h3 className="text-2xl font-bold text-green-800 mb-6">✅ The TRACS Solution</h3>
+                <ul className="space-y-4">
+                  <li className="flex items-start space-x-3">
+                    <span className="text-green-500 text-xl">•</span>
+                    <span className="text-slate-700">Strategic, targeted community outreach</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-green-500 text-xl">•</span>
+                    <span className="text-slate-700">Nurse-led pre-screening eliminates unqualified leads</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-green-500 text-xl">•</span>
+                    <span className="text-slate-700">Sites receive only qualified, engaged participants</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-green-500 text-xl">•</span>
+                    <span className="text-slate-700">Faster enrollment and predictable results</span>
+                  </li>
+                  <li className="flex items-start space-x-3">
+                    <span className="text-green-500 text-xl">•</span>
+                    <span className="text-slate-700">Reduced coordinator workload and improved efficiency</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Results Section */}
-      <section id="results" className="py-12 sm:py-16 bg-white rounded-xl shadow-lg border border-slate-200 mt-12 sm:mt-16 mx-4 sm:mx-6 lg:mx-8">
+      <section className="py-16 sm:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Proven Results: See the Difference</h2>
-            <p className="text-base sm:text-lg text-slate-600 mt-2 max-w-3xl mx-auto px-4">
-              Data shows our high-touch model dramatically outperforms standard digital campaigns in delivering enrolled subjects.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
-            <div className="text-center">
-              <h3 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4">Typical "Online-Only" Campaign</h3>
-              <div className="max-w-xs mx-auto">
-                <Doughnut data={beforeData} options={chartOptions} />
-              </div>
-              <p className="mt-4 text-slate-600 text-sm sm:text-base">Low conversion rates and high volume of unqualified leads result in wasted time and missed enrollment targets.</p>
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
+                Proven Results
+              </h2>
+              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+                Our high-touch approach consistently delivers superior enrollment rates compared to digital-only campaigns.
+              </p>
             </div>
-            <div className="text-center">
-              <h3 className="text-xl sm:text-2xl font-bold text-teal-800 mb-4">With Our High-Touch Approach</h3>
-              <div className="max-w-xs mx-auto">
-                <Doughnut data={afterData} options={chartOptions} />
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-slate-800 mb-4">Typical Digital-Only Campaign</h3>
+                <div className="max-w-xs mx-auto mb-6">
+                  <Doughnut data={beforeData} options={chartOptions} />
+                </div>
+                <p className="text-slate-600 text-sm">
+                  Low conversion rates and high volume of unqualified leads result in wasted time and missed enrollment targets.
+                </p>
               </div>
-              <p className="mt-4 text-slate-600 text-sm sm:text-base">By focusing on in-person outreach and rigorous pre-screening, we deliver a much higher percentage of qualified, enrolled participants.</p>
+              
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-teal-800 mb-4">With TRACS High-Touch Model</h3>
+                <div className="max-w-xs mx-auto mb-6">
+                  <Doughnut data={afterData} options={chartOptions} />
+                </div>
+                <p className="text-slate-600 text-sm">
+                  By focusing on in-person outreach and rigorous pre-screening, we deliver a much higher percentage of qualified, enrolled participants.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Process Section */}
-      <section id="process" className="py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-extrabold text-slate-900">Your End-to-End Recruitment Partner</h2>
-          <p className="text-lg text-slate-600 mt-2 max-w-3xl mx-auto">
-            We provide a fully managed, transparent process from strategy to final enrollment.
-          </p>
+      {/* Who We Serve Section */}
+      <section className="py-16 sm:py-20 bg-slate-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-6">
+                Who We Serve
+              </h2>
+              <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+                We work with both sponsors who need participants and sites who need to fill their studies.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Sponsors/CROs */}
+              <div className="bg-white p-8 rounded-xl shadow-lg">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl">🏢</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Sponsors & CROs</h3>
+                  <p className="text-slate-600">
+                    Pharmaceutical companies, biotech firms, medical device manufacturers, and contract research organizations
+                  </p>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-center space-x-3">
+                    <span className="text-teal-600">✓</span>
+                    <span className="text-slate-700">Portfolio-wide recruitment strategies</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <span className="text-teal-600">✓</span>
+                    <span className="text-slate-700">Multi-site coordination and management</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <span className="text-teal-600">✓</span>
+                    <span className="text-slate-700">Centralized nurse-led pre-screening</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <span className="text-teal-600">✓</span>
+                    <span className="text-slate-700">Transparent reporting and analytics</span>
+                  </li>
+                </ul>
+                <div className="mt-6">
+                  <button
+                    onClick={() => handleFormSubmit('sponsor')}
+                    className="w-full bg-teal-600 text-white font-semibold py-3 rounded-lg hover:bg-teal-700 transition-colors"
+                  >
+                    Get Sponsor Proposal
+                  </button>
+                </div>
+              </div>
+
+              {/* Sites */}
+              <div className="bg-white p-8 rounded-xl shadow-lg">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl">🏥</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 mb-2">Clinical Trial Sites</h3>
+                  <p className="text-slate-600">
+                    Hospitals, research centers, physician practices, and site management organizations
+                  </p>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-center space-x-3">
+                    <span className="text-teal-600">✓</span>
+                    <span className="text-slate-700">End-to-end recruitment support</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <span className="text-teal-600">✓</span>
+                    <span className="text-slate-700">Community outreach and engagement</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <span className="text-teal-600">✓</span>
+                    <span className="text-slate-700">IRB documentation assistance</span>
+                  </li>
+                  <li className="flex items-center space-x-3">
+                    <span className="text-teal-600">✓</span>
+                    <span className="text-slate-700">Study-specific landing pages</span>
+                  </li>
+                </ul>
+                <div className="mt-6">
+                  <button
+                    onClick={() => handleFormSubmit('site')}
+                    className="w-full bg-white text-teal-600 border-2 border-teal-600 font-semibold py-3 rounded-lg hover:bg-teal-50 transition-colors"
+                  >
+                    Get Site Proposal
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        
-        <div className="max-w-4xl mx-auto space-y-12">
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-full bg-teal-600 text-white text-3xl font-bold shadow-lg">1</div>
-            <div className="bg-white p-6 rounded-lg shadow-md flex-1">
-              <h3 className="text-xl font-bold text-slate-900">Custom Marketing & IRB Documentation</h3>
-              <p className="text-slate-600 mt-2">We start by developing bespoke, bilingual marketing materials (flyers, brochures) tailored to your study. Our team handles the preparation of all necessary documentation to ensure a smooth and efficient IRB submission and approval process.</p>
+      </section>
+
+      {/* Contact Form Section */}
+      <section id="contact" className="py-16 sm:py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">
+                Ready to Accelerate Your Recruitment?
+              </h2>
+              <p className="text-xl text-slate-600">
+                Get a personalized proposal tailored to your specific needs and challenges.
+              </p>
             </div>
+
+            {!showForm && !successEmail && (
+              <div className="bg-slate-50 p-8 rounded-xl">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-slate-900 mb-4">Choose Your Path</h3>
+                  <p className="text-slate-600">
+                    Tell us about your organization so we can provide the most relevant information.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <button
+                    onClick={() => handleFormSubmit('sponsor')}
+                    className="p-6 bg-white rounded-lg border-2 border-slate-200 hover:border-teal-500 hover:shadow-lg transition-all text-left"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                        <span className="text-2xl">🏢</span>
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-semibold text-slate-900">I'm a Sponsor or CRO</h4>
+                        <p className="text-slate-600 text-sm">Looking for patient recruitment services</p>
+                      </div>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => handleFormSubmit('site')}
+                    className="p-6 bg-white rounded-lg border-2 border-slate-200 hover:border-teal-500 hover:shadow-lg transition-all text-left"
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                        <span className="text-2xl">🏥</span>
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-semibold text-slate-900">I'm a Clinical Trial Site</h4>
+                        <p className="text-slate-600 text-sm">Looking for recruitment support</p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {showForm && (
+              <div className="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
+                {formType === 'sponsor' ? (
+                  <FormSponsorQuote onSuccess={handleSuccess} />
+                ) : (
+                  <FormSiteQuote onSuccess={handleSuccess} />
+                )}
+              </div>
+            )}
+
+            {successEmail && (
+              <div className="text-center py-12">
+                <div className="flex items-center justify-center h-16 w-16 rounded-full bg-green-100 text-green-600 mx-auto mb-4">
+                  <span className="text-4xl">✓</span>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">Thank You!</h3>
+                <p className="text-slate-600 mb-6">
+                  Your request has been received. Please check your email for a verification link to access your tailored proposal.
+                </p>
+                <button
+                  onClick={() => {
+                    setSuccessEmail('');
+                    setShowForm(false);
+                  }}
+                  className="text-teal-600 hover:text-teal-800 font-medium"
+                >
+                  Submit another request
+                </button>
+              </div>
+            )}
           </div>
-          
-          <div className="flex flex-col md:flex-row-reverse items-center gap-8">
-            <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-full bg-teal-600 text-white text-3xl font-bold shadow-lg">2</div>
-            <div className="bg-white p-6 rounded-lg shadow-md flex-1">
-              <h3 className="text-xl font-bold text-slate-900">High-Conversion Landing Pages</h3>
-              <p className="text-slate-600 mt-2">For each study, we create a dedicated, modern, and mobile-friendly landing page. Designed to mirror IRB-approved materials, these pages act as a digital hub to securely capture interest from potential participants 24/7.</p>
-            </div>
-          </div>
-          
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-full bg-teal-600 text-white text-3xl font-bold shadow-lg">3</div>
-            <div className="bg-white p-6 rounded-lg shadow-md flex-1">
-              <h3 className="text-xl font-bold text-slate-900">Strategic "Boots-on-the-Ground" Outreach</h3>
-              <p className="text-slate-600 mt-2">This is our key differentiator. Our teams engage in targeted, in-person recruitment at community hot-spots. We build trust through one-on-one conversations, answer questions, and find candidates that digital ads will never reach.</p>
-            </div>
-          </div>
-          
-          <div className="flex flex-col md:flex-row-reverse items-center gap-8">
-            <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-full bg-teal-600 text-white text-3xl font-bold shadow-lg">4</div>
-            <div className="bg-white p-6 rounded-lg shadow-md flex-1">
-              <h3 className="text-xl font-bold text-slate-900">Rigorous Nurse-Led Pre-Screening</h3>
-              <p className="text-slate-600 mt-2">Every lead is contacted by a licensed nurse for a thorough clinical pre-screening against your I/E criteria. We verify medications, indications, and review documentation like X-rays if needed, ensuring only the most qualified candidates are sent to your site.</p>
-            </div>
-          </div>
-          
-          <div className="flex flex-col md:flex-row items-center gap-8">
-            <div className="flex-shrink-0 flex items-center justify-center w-20 h-20 rounded-full bg-teal-600 text-white text-3xl font-bold shadow-lg">5</div>
-            <div className="bg-white p-6 rounded-lg shadow-md flex-1">
-              <h3 className="text-xl font-bold text-slate-900">Senior-Level Study Management & Reporting</h3>
-              <p className="text-slate-600 mt-2">A senior-level Study Manager oversees your entire campaign. You receive detailed weekly updates on outreach activities, leads generated, and screening progress, ensuring full transparency and alignment with your goals.</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="mt-20 text-center">
-          <h3 className="text-4xl font-extrabold text-teal-800 leading-tight">TRAC</h3>
-          <p className="text-lg text-slate-700 font-semibold">Trial Recruitment and Clinical Services</p>
-          <p className="text-lg text-slate-600 mt-4">Keeping clinical trials on track with faster, smarter recruitment.</p>
-          <a 
-            href="#contact" 
-            className="inline-block mt-8 bg-teal-600 text-white font-semibold py-4 px-8 rounded-lg shadow-md hover:bg-teal-700 transition-transform hover:scale-105"
-            onClick={(e) => {
-              e.preventDefault();
-              const contactElement = document.getElementById('contact');
-              if (contactElement) {
-                contactElement.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-          >
-            Request a Proposal
-          </a>
         </div>
       </section>
     </div>
@@ -402,4 +523,3 @@ const Home = () => {
 };
 
 export default Home;
-
