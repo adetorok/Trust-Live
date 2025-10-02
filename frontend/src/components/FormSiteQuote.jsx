@@ -11,22 +11,62 @@ const FormSiteQuote = ({ onSuccess }) => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [touched, setTouched] = useState({});
 
   const forbiddenDomains = [
     'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 
-    'icloud.com', 'msn.com', 'live.com', 'yandex.com', 'mail.ru'
+    'icloud.com', 'msn.com', 'live.com', 'yandex.com', 'mail.ru',
+    'protonmail.com', 'tutanota.com', 'zoho.com', 'fastmail.com'
   ];
 
   const validateEmail = (email) => {
-    const domain = email.substring(email.lastIndexOf('@') + 1);
-    return !forbiddenDomains.includes(domain.toLowerCase());
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return false;
+    
+    const domain = email.substring(email.lastIndexOf('@') + 1).toLowerCase();
+    return !forbiddenDomains.includes(domain);
+  };
+
+  const validatePhone = (phone) => {
+    // Remove all non-digit characters
+    const digitsOnly = phone.replace(/\D/g, '');
+    // Check if it's a valid US phone number (10 digits) or international (7-15 digits)
+    return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+  };
+
+  const formatPhoneNumber = (value) => {
+    // Remove all non-digit characters
+    const digitsOnly = value.replace(/\D/g, '');
+    
+    // Format as (XXX) XXX-XXXX for US numbers
+    if (digitsOnly.length <= 10) {
+      if (digitsOnly.length <= 3) return digitsOnly;
+      if (digitsOnly.length <= 6) return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3)}`;
+      return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6, 10)}`;
+    }
+    
+    // For international numbers, just return the digits
+    return digitsOnly;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let processedValue = value;
+    
+    // Format phone number as user types
+    if (name === 'phone') {
+      processedValue = formatPhoneNumber(value);
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: processedValue
+    }));
+    
+    // Mark field as touched
+    setTouched(prev => ({
+      ...prev,
+      [name]: true
     }));
     
     // Clear error when user starts typing
@@ -38,33 +78,82 @@ const FormSiteQuote = ({ onSuccess }) => {
     }
   };
 
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched(prev => ({
+      ...prev,
+      [name]: true
+    }));
+    
+    // Validate individual field on blur
+    validateField(name, formData[name]);
+  };
+
+  const validateField = (fieldName, value) => {
+    let error = '';
+    
+    switch (fieldName) {
+      case 'firstName':
+        if (!value.trim()) {
+          error = 'First name is required';
+        } else if (value.trim().length < 2) {
+          error = 'First name must be at least 2 characters';
+        }
+        break;
+        
+      case 'lastName':
+        if (!value.trim()) {
+          error = 'Last name is required';
+        } else if (value.trim().length < 2) {
+          error = 'Last name must be at least 2 characters';
+        }
+        break;
+        
+      case 'email':
+        if (!value.trim()) {
+          error = 'Email is required';
+        } else if (!validateEmail(value)) {
+          error = 'Please use a corporate email address (e.g., name@yourcompany.com)';
+        }
+        break;
+        
+      case 'phone':
+        if (!value.trim()) {
+          error = 'Phone number is required';
+        } else if (!validatePhone(value)) {
+          error = 'Please enter a valid phone number';
+        }
+        break;
+        
+      case 'role':
+        if (!value) {
+          error = 'Please select your role';
+        }
+        break;
+        
+      default:
+        break;
+    }
+    
+    setErrors(prev => ({
+      ...prev,
+      [fieldName]: error
+    }));
+    
+    return !error;
+  };
+
   const validateForm = () => {
-    const newErrors = {};
+    const fieldsToValidate = ['firstName', 'lastName', 'email', 'phone', 'role'];
+    let isValid = true;
     
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    }
+    fieldsToValidate.forEach(field => {
+      if (!validateField(field, formData[field])) {
+        isValid = false;
+      }
+    });
     
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = 'Please use a corporate email address (e.g., name@yourcompany.com)';
-    }
-    
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    }
-    
-    if (!formData.role) {
-      newErrors.role = 'Please select your role';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return isValid;
   };
 
   const handleSubmit = async (e) => {
@@ -99,12 +188,13 @@ const FormSiteQuote = ({ onSuccess }) => {
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
+            onBlur={handleBlur}
             className={`mt-1 w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500 ${
-              errors.firstName ? 'border-red-500' : 'border-slate-300'
+              errors.firstName && touched.firstName ? 'border-red-500' : 'border-slate-300'
             }`}
             required
           />
-          {errors.firstName && (
+          {errors.firstName && touched.firstName && (
             <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
           )}
         </div>
@@ -119,12 +209,13 @@ const FormSiteQuote = ({ onSuccess }) => {
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
+            onBlur={handleBlur}
             className={`mt-1 w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500 ${
-              errors.lastName ? 'border-red-500' : 'border-slate-300'
+              errors.lastName && touched.lastName ? 'border-red-500' : 'border-slate-300'
             }`}
             required
           />
-          {errors.lastName && (
+          {errors.lastName && touched.lastName && (
             <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
           )}
         </div>
@@ -140,13 +231,14 @@ const FormSiteQuote = ({ onSuccess }) => {
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          placeholder="555-123-4567"
+          onBlur={handleBlur}
+          placeholder="(555) 123-4567"
           className={`mt-1 w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500 ${
-            errors.phone ? 'border-red-500' : 'border-slate-300'
+            errors.phone && touched.phone ? 'border-red-500' : 'border-slate-300'
           }`}
           required
         />
-        {errors.phone && (
+        {errors.phone && touched.phone && (
           <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
         )}
       </div>
@@ -161,13 +253,14 @@ const FormSiteQuote = ({ onSuccess }) => {
           name="email"
           value={formData.email}
           onChange={handleChange}
+          onBlur={handleBlur}
           placeholder="name@company.com"
           className={`mt-1 w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500 ${
-            errors.email ? 'border-red-500' : 'border-slate-300'
+            errors.email && touched.email ? 'border-red-500' : 'border-slate-300'
           }`}
           required
         />
-        {errors.email && (
+        {errors.email && touched.email && (
           <p className="text-red-500 text-sm mt-1">{errors.email}</p>
         )}
       </div>
@@ -181,8 +274,9 @@ const FormSiteQuote = ({ onSuccess }) => {
           name="role"
           value={formData.role}
           onChange={handleChange}
+          onBlur={handleBlur}
           className={`mt-1 w-full px-3 py-2 border rounded-md focus:ring-teal-500 focus:border-teal-500 ${
-            errors.role ? 'border-red-500' : 'border-slate-300'
+            errors.role && touched.role ? 'border-red-500' : 'border-slate-300'
           }`}
           required
         >
@@ -193,7 +287,7 @@ const FormSiteQuote = ({ onSuccess }) => {
           <option value="recruiter">Recruitment Specialist</option>
           <option value="other">Other</option>
         </select>
-        {errors.role && (
+        {errors.role && touched.role && (
           <p className="text-red-500 text-sm mt-1">{errors.role}</p>
         )}
       </div>
@@ -207,9 +301,19 @@ const FormSiteQuote = ({ onSuccess }) => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-teal-600 text-white font-semibold py-3 rounded-md hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-teal-600 text-white font-semibold py-3 rounded-md hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
       >
-        {isSubmitting ? 'Submitting...' : 'Request Access'}
+        {isSubmitting ? (
+          <>
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Submitting...
+          </>
+        ) : (
+          'Request Access'
+        )}
       </button>
     </form>
   );
