@@ -85,12 +85,12 @@ const Home = () => {
   return (
     <div className="text-slate-800">
       {/* Hero Section */}
-      <section id="hero" className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
-        <div>
-          <h2 className="text-3xl font-bold text-slate-500 mb-2 text-center lg:text-left">
+      <section id="hero" className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center mb-16 lg:mb-24 px-4 sm:px-6 lg:px-8">
+        <div className="order-2 lg:order-1">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-500 mb-2 text-center lg:text-left">
             We Are The ...
           </h2>
-          <div className="relative w-full min-h-[400px] md:min-h-[500px]">
+          <div className="relative w-full min-h-[300px] sm:min-h-[400px] md:min-h-[500px]">
             {/* Power Words */}
             <div className="bubble absolute flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full z-0" style={{top: '5%', left: '15%', animationDelay: '-2s', animationDuration: '18s'}}>
               <span className="font-bold text-slate-500">Elite</span>
@@ -151,8 +151,8 @@ const Home = () => {
           </div>
         </div>
         
-        <div id="contact" className="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight mb-4">
+        <div id="contact" className="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-slate-200 order-1 lg:order-2">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight mb-4 text-center lg:text-left">
             Study Subject Recruiter
           </h1>
           
@@ -219,24 +219,24 @@ const Home = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-16">
+      <section id="services" className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-4xl font-extrabold text-slate-900">The Difference is Clear:</h2>
-          <h3 className="text-3xl font-bold text-teal-700 mb-12">Why Our Approach Succeeds</h3>
-          <div className="flex flex-col items-center justify-center space-y-4 mb-12">
-            <div className="stop-sign bg-red-600 h-24 w-24 flex items-center justify-center shadow-lg">
-              <span className="text-white font-extrabold text-4xl">STOP</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900">The Difference is Clear:</h2>
+          <h3 className="text-2xl sm:text-3xl font-bold text-teal-700 mb-8 sm:mb-12">Why Our Approach Succeeds</h3>
+          <div className="flex flex-col items-center justify-center space-y-4 mb-8 sm:mb-12">
+            <div className="stop-sign bg-red-600 h-20 w-20 sm:h-24 sm:w-24 flex items-center justify-center shadow-lg">
+              <span className="text-white font-extrabold text-3xl sm:text-4xl">STOP</span>
             </div>
-            <p className="text-lg text-slate-600 max-w-2xl">
+            <p className="text-base sm:text-lg text-slate-600 max-w-2xl px-4">
               ...relying on passive online marketing that delivers unqualified leads, no-shows, and frustration.
             </p>
           </div>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
           {/* The Old Way */}
-          <div className="bg-white p-8 rounded-xl shadow-lg border border-slate-200">
-            <h4 className="text-2xl font-bold text-slate-500 mb-6 text-center">The "Online-Only" Model</h4>
+          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-slate-200">
+            <h4 className="text-xl sm:text-2xl font-bold text-slate-500 mb-6 text-center">The "Online-Only" Model</h4>
             <ul className="space-y-4">
               <li className="flex items-start">
                 <span className="text-2xl mr-4 text-red-500">&times;</span>
@@ -270,8 +270,8 @@ const Home = () => {
           </div>
           
           {/* Our Way */}
-          <div className="bg-teal-50/50 p-8 rounded-xl shadow-lg border-2 border-teal-500">
-            <h4 className="text-2xl font-bold text-teal-800 mb-6 text-center">Our High-Touch, Human-First Approach</h4>
+          <div className="bg-teal-50/50 p-6 sm:p-8 rounded-xl shadow-lg border-2 border-teal-500">
+            <h4 className="text-xl sm:text-2xl font-bold text-teal-800 mb-6 text-center">Our High-Touch, Human-First Approach</h4>
             <ul className="space-y-6">
               <li className="flex items-start">
                 <span className="text-3xl mr-4 text-teal-600">1.</span>
@@ -300,28 +300,28 @@ const Home = () => {
       </section>
 
       {/* Results Section */}
-      <section id="results" className="py-16 bg-white rounded-xl shadow-lg border border-slate-200 mt-16">
+      <section id="results" className="py-12 sm:py-16 bg-white rounded-xl shadow-lg border border-slate-200 mt-12 sm:mt-16 mx-4 sm:mx-6 lg:mx-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-extrabold text-slate-900">Proven Results: See the Difference</h2>
-            <p className="text-lg text-slate-600 mt-2 max-w-3xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900">Proven Results: See the Difference</h2>
+            <p className="text-base sm:text-lg text-slate-600 mt-2 max-w-3xl mx-auto px-4">
               Data shows our high-touch model dramatically outperforms standard digital campaigns in delivering enrolled subjects.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Typical "Online-Only" Campaign</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-slate-800 mb-4">Typical "Online-Only" Campaign</h3>
               <div className="max-w-xs mx-auto">
                 <Doughnut data={beforeData} options={chartOptions} />
               </div>
-              <p className="mt-4 text-slate-600">Low conversion rates and high volume of unqualified leads result in wasted time and missed enrollment targets.</p>
+              <p className="mt-4 text-slate-600 text-sm sm:text-base">Low conversion rates and high volume of unqualified leads result in wasted time and missed enrollment targets.</p>
             </div>
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-teal-800 mb-4">With Our High-Touch Approach</h3>
+              <h3 className="text-xl sm:text-2xl font-bold text-teal-800 mb-4">With Our High-Touch Approach</h3>
               <div className="max-w-xs mx-auto">
                 <Doughnut data={afterData} options={chartOptions} />
               </div>
-              <p className="mt-4 text-slate-600">By focusing on in-person outreach and rigorous pre-screening, we deliver a much higher percentage of qualified, enrolled participants.</p>
+              <p className="mt-4 text-slate-600 text-sm sm:text-base">By focusing on in-person outreach and rigorous pre-screening, we deliver a much higher percentage of qualified, enrolled participants.</p>
             </div>
           </div>
         </div>
