@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useToast } from '../contexts/ToastContext';
 import { api } from '../utils/api';
 
 const FormSiteQuote = ({ onSuccess }) => {
+  const { showSuccess, showError } = useToast();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -160,6 +162,7 @@ const FormSiteQuote = ({ onSuccess }) => {
     e.preventDefault();
     
     if (!validateForm()) {
+      showError('Please fix the errors above before submitting.');
       return;
     }
     
@@ -167,9 +170,12 @@ const FormSiteQuote = ({ onSuccess }) => {
     
     try {
       await api.submitSiteQuote(formData);
+      showSuccess('Request submitted successfully! Check your email for verification.');
       onSuccess(formData.email);
     } catch (error) {
-      setErrors({ submit: error.message });
+      const errorMessage = error.message || 'Failed to submit request. Please try again.';
+      showError(errorMessage);
+      setErrors({ submit: errorMessage });
     } finally {
       setIsSubmitting(false);
     }

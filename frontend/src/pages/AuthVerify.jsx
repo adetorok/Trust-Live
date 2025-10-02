@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
+import LoadingSpinner from '../components/LoadingSpinner';
 import { api } from '../utils/api';
 import { auth } from '../utils/auth';
 
 const AuthVerify = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const [status, setStatus] = useState('verifying'); // 'verifying', 'success', 'error'
   const [error, setError] = useState('');
 
@@ -34,6 +37,7 @@ const AuthVerify = () => {
         });
 
         setStatus('success');
+        showSuccess('Access verified successfully!');
         
         // Redirect after a short delay
         setTimeout(() => {
@@ -42,8 +46,10 @@ const AuthVerify = () => {
 
       } catch (error) {
         console.error('Token verification failed:', error);
-        setError(error.message || 'Token verification failed');
+        const errorMessage = error.message || 'Token verification failed';
+        setError(errorMessage);
         setStatus('error');
+        showError(errorMessage);
       }
     };
 
@@ -54,9 +60,8 @@ const AuthVerify = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Verifying Access</h2>
-          <p className="text-slate-600">Please wait while we verify your access...</p>
+          <LoadingSpinner size="xl" text="Verifying Access" />
+          <p className="text-slate-600 mt-4">Please wait while we verify your access...</p>
         </div>
       </div>
     );
