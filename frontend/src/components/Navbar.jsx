@@ -40,6 +40,13 @@ const Navbar = () => {
               <a 
                 href="/#services" 
                 className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const servicesElement = document.getElementById('services');
+                  if (servicesElement) {
+                    servicesElement.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
               >
                 Our Difference
               </a>

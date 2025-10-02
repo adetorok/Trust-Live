@@ -382,7 +382,17 @@ const Home = () => {
           <h3 className="text-4xl font-extrabold text-teal-800 leading-tight">TRAC</h3>
           <p className="text-lg text-slate-700 font-semibold">Trial Recruitment and Clinical Services</p>
           <p className="text-lg text-slate-600 mt-4">Keeping clinical trials on track with faster, smarter recruitment.</p>
-          <a href="#contact" className="inline-block mt-8 bg-teal-600 text-white font-semibold py-4 px-8 rounded-lg shadow-md hover:bg-teal-700 transition-transform hover:scale-105">
+          <a 
+            href="#contact" 
+            className="inline-block mt-8 bg-teal-600 text-white font-semibold py-4 px-8 rounded-lg shadow-md hover:bg-teal-700 transition-transform hover:scale-105"
+            onClick={(e) => {
+              e.preventDefault();
+              const contactElement = document.getElementById('contact');
+              if (contactElement) {
+                contactElement.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          >
             Request a Proposal
           </a>
         </div>
