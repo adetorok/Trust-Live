@@ -89,9 +89,9 @@ const Home = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12 lg:mb-16">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6">
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6">
                 Accelerate Your Clinical Trial
-                <span className="block text-teal-600">Recruitment Success</span>
+                <span className="block text-teal-600">Recruitment Success - Updated</span>
               </h1>
               <p className="text-xl sm:text-2xl text-slate-600 mb-8 max-w-4xl mx-auto leading-relaxed">
                 TRACS specializes in <strong>high-touch, human-first patient recruitment</strong> that delivers 
