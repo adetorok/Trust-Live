@@ -1,6 +1,6 @@
 # Dependencies
 node_modules/
-frontend/node_modules/
+*/node_modules/
 
 # Environment variables
 .env
@@ -10,8 +10,10 @@ frontend/node_modules/
 .env.production.local
 
 # Build outputs
-frontend/dist/
-frontend/build/
+dist/
+build/
+*/dist/
+*/build/
 
 # Logs
 npm-debug.log*
@@ -57,7 +59,7 @@ jspm_packages/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+.env.test
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -68,7 +70,6 @@ jspm_packages/
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -97,3 +98,6 @@ temp/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Backup directory
+backup/

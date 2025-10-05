@@ -1,166 +1,130 @@
-# TRACS - Trial Recruitment and Clinical Services
+# TRUST - Trial Recruitment & Unified Subject Services
 
-A comprehensive web application for clinical trial recruitment services, built with React frontend and Node.js/Express backend.
+A clinical trial recruitment platform built with React (frontend) and Node.js/Express (backend).
 
-## Features
-
-- **Dual User Flows**: Separate landing pages and proposals for Sponsors/CROs and Sites/Vendors
-- **Magic Link Authentication**: Secure email-based access to proposal pages
-- **Interactive Cost Calculators**: Real-time pricing for different service configurations
-- **Meeting Request System**: Integrated scheduling for follow-up meetings
-- **Responsive Design**: Mobile-friendly interface built with Tailwind CSS
-
-## Project Structure
+## 🏗️ Monorepo Structure
 
 ```
-tracs-app/
-├── frontend/                 # React frontend
-│   ├── src/
-│   │   ├── components/       # Reusable React components
-│   │   ├── pages/           # Page components
-│   │   ├── utils/           # API and auth utilities
-│   │   └── App.jsx          # Main app component
-│   ├── package.json
-│   └── vite.config.js
-├── server.js                 # Express backend
-├── package.json              # Root package.json
-└── env.example              # Environment variables template
+/
+├── frontend/          # React + Vite frontend
+│   ├── public/        # Static assets
+│   ├── src/           # Source code
+│   ├── package.json   # Frontend dependencies
+│   └── vite.config.js # Vite configuration
+├── backend/           # Node.js + Express API
+│   ├── src/           # Server source code
+│   ├── package.json   # Backend dependencies
+│   └── .env.example   # Environment variables template
+├── .github/workflows/ # CI/CD workflows
+└── backup/            # Original structure backup
 ```
 
-## Setup Instructions
+## 🚀 Quick Start
 
 ### Prerequisites
-
-- Node.js (v16 or higher)
+- Node.js 20+
 - npm or yarn
-- Email service credentials (Gmail, SendGrid, etc.)
+- MongoDB database
 
-### Installation
+### Frontend Development
 
-1. **Clone and install dependencies:**
-   ```bash
-   git clone <repository-url>
-   cd tracs-app
-   npm run install-all
-   ```
+```bash
+cd frontend
+npm ci
+npm run dev          # Start development server (http://localhost:5173)
+npm run build        # Build for production
+npm run preview      # Preview production build
+```
 
-2. **Set up environment variables:**
-   ```bash
-   cp env.example .env
-   ```
-   
-   Edit `.env` with your configuration:
-   ```env
-   JWT_SECRET=your-super-secret-jwt-key
-   EMAIL_USER=your-email@gmail.com
-   EMAIL_PASS=your-app-password
-   SALES_INBOX=sales@tracs-recruitment.com
-   FRONTEND_URL=http://localhost:5173
-   PORT=4000
-   ```
+### Backend Development
 
-3. **Start the development servers:**
-   ```bash
-   npm run dev
-   ```
+```bash
+cd backend
+npm ci
+cp .env.example .env  # Copy and configure environment variables
+npm run dev          # Start development server with nodemon
+npm start            # Start production server
+npm run seed         # Seed database (optional)
+```
 
-   This will start:
-   - Backend server on http://localhost:4000
-   - Frontend development server on http://localhost:5173
+### Environment Variables
 
-### Production Deployment
+#### Frontend (.env)
+```env
+VITE_API_URL=http://localhost:4000/api
+```
 
-1. **Build the frontend:**
-   ```bash
-   npm run build
-   ```
+#### Backend (.env)
+```env
+NODE_ENV=development
+PORT=4000
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRES=7d
+BASE_URL=http://localhost:5173
+```
 
-2. **Start the production server:**
-   ```bash
-   npm start
-   ```
+## 🧪 Testing
 
-## User Flows
+### Frontend Tests
+```bash
+cd frontend
+npm run build        # Should complete without errors
+npm run preview      # Should serve on http://localhost:4173
+```
 
-### 1. Sponsor/CRO Flow
-1. Visit `/sponsor` landing page
-2. Fill out quote request form
-3. Receive email with magic link
-4. Click link to access `/sponsor/proposal`
-5. Use interactive cost calculator
-6. Request meeting for finalization
+### Backend Tests
+```bash
+cd backend
+npm start            # Should start on http://localhost:4000
+curl http://localhost:4000/health  # Should return {"ok":true}
+```
 
-### 2. Site/Vendor Flow
-1. Visit `/site` landing page
-2. Fill out quote request form
-3. Receive email with magic link
-4. Click link to access `/site/proposal`
-5. Use interactive cost calculator
-6. Request meeting for finalization
+## 🚀 Deployment
 
-## API Endpoints
-
-- `POST /api/quotes/sponsor` - Submit sponsor quote request
-- `POST /api/quotes/site` - Submit site quote request
-- `GET /api/auth/verify` - Verify magic link token
-- `POST /api/meetings` - Submit meeting request
-
-## Technology Stack
-
-### Frontend
-- React 18
-- React Router DOM
-- Chart.js (for data visualization)
-- Tailwind CSS
-- Vite (build tool)
+### Frontend (GitHub Pages)
+The frontend is automatically deployed to GitHub Pages when pushing to the `main` branch.
 
 ### Backend
-- Node.js
-- Express.js
-- JWT (authentication)
-- Nodemailer (email service)
-- CORS (cross-origin requests)
+Deploy the backend to your preferred hosting service (Heroku, Railway, etc.).
 
-## Environment Variables
+## 📁 What Moved
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `JWT_SECRET` | Secret key for JWT token signing | Yes |
-| `EMAIL_USER` | Email service username | Yes |
-| `EMAIL_PASS` | Email service password/app password | Yes |
-| `SALES_INBOX` | Email for meeting request notifications | No |
-| `FRONTEND_URL` | Frontend URL for email links | Yes |
-| `PORT` | Server port | No (default: 4000) |
+- **Frontend**: All React code moved to `/frontend/`
+- **Backend**: All API/server code moved to `/backend/`
+- **Assets**: Static images moved to `/frontend/public/`
+- **Configuration**: Environment files created for both apps
 
-## Email Configuration
+## 🔄 Rollback Plan
 
-The application uses Nodemailer for sending emails. Configure your email service:
+If you need to rollback to the original structure:
 
-### Gmail
-1. Enable 2-factor authentication
-2. Generate an App Password
-3. Use your Gmail address and app password in `.env`
+1. Checkout the backup: `git checkout backup/original-20251004-183514/ -- .`
+2. Or restore from the backup directory: `cp -r backup/original-20251004-183514/* .`
 
-### Other Services
-Update the transporter configuration in `server.js` for your preferred email service.
+## 🛠️ Development Commands
 
-## Security Features
+### Full Stack Development
+```bash
+# Terminal 1 - Backend
+cd backend && npm start
 
-- JWT tokens with 24-hour expiration
-- Email domain validation (blocks personal emails)
-- CORS protection
-- Input validation and sanitization
-- Secure session management
+# Terminal 2 - Frontend  
+cd frontend && npm run dev
+```
 
-## Contributing
+### Production Build
+```bash
+# Build frontend
+cd frontend && npm run build
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+# Start backend
+cd backend && npm start
+```
 
-## License
+## 📝 Notes
 
-MIT License - see LICENSE file for details
-
+- The original structure is preserved in `backup/original-20251004-183514/`
+- All paths and imports have been updated for the new structure
+- Environment variables are properly configured for both development and production
+- CI/CD workflow is set up for automatic frontend deployment

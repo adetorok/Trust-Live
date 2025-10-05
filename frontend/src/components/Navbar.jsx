@@ -1,9 +1,48 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useState } from 'react';
+import RoleSelectionModal from './RoleSelectionModal';
 
 const Navbar = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+
+  const handleRequestProposalClick = (e) => {
+    e.preventDefault();
+    setShowRoleModal(true);
+  };
+
+  const handleRoleSelect = (role) => {
+    setShowRoleModal(false);
+    try {
+      localStorage.setItem('pendingRole', role);
+    } catch {}
+    // Route based on role; target pages will auto-open their forms
+    if (role === 'sponsor') {
+      if (location.pathname === '/sponsor' && typeof window.__trustOpenSponsorForm === 'function') {
+        window.__trustOpenSponsorForm();
+        return;
+      }
+      window.location.hash = '#/sponsor';
+    } else if (role === 'site') {
+      if (location.pathname === '/site' && typeof window.__trustOpenSiteForm === 'function') {
+        window.__trustOpenSiteForm();
+        return;
+      }
+      window.location.hash = '#/site';
+    } else {
+      window.location.hash = '#/';
+    }
+  };
+
+  const handleNavClick = (path) => {
+    // Scroll to top when clicking on any nav link
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
+  };
 
   // Helper function to check if a path is active
   const isActive = (path) => {
@@ -19,49 +58,46 @@ const Navbar = () => {
     
     if (isActive(path)) {
       return isPrimary 
-        ? `${baseStyles} bg-teal-700 text-white` 
-        : `${baseStyles} bg-teal-100 text-teal-800 border-2 border-teal-600`;
+        ? `${baseStyles} bg-[#10224E] text-[#E8EEFC]` 
+        : `${baseStyles} bg-[#56F0C8] text-[#0B1220] border-2 border-[#56F0C8]`;
     }
     
     return isPrimary
-      ? `${baseStyles} bg-teal-600 text-white hover:bg-teal-700`
-      : `${baseStyles} bg-white text-teal-600 border border-teal-600 hover:bg-teal-50`;
+      ? `${baseStyles} bg-[#16B1F0] text-white hover:bg-[#10224E]`
+      : `${baseStyles} bg-white text-[#10224E] border border-[#10224E] hover:bg-[#56F0C8] hover:text-[#0B1220]`;
   };
 
   return (
-    <header className="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50" role="banner">
+    <>
+      <RoleSelectionModal
+        isOpen={showRoleModal}
+        onClose={() => setShowRoleModal(false)}
+        onRoleSelect={handleRoleSelect}
+      />
+      <header className="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50" role="banner">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex-shrink-0">
-            <Link 
-              to="/" 
-              className="text-xl font-bold text-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 rounded-md px-2 py-1"
-              aria-label="TRACS - Go to homepage"
-            >
-              TRACS
-            </Link>
-          </div>
+        <div className="flex items-center justify-between h-20">
+                <div className="flex-shrink-0">
+                  <Link 
+                    to="/" 
+                    className="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2 rounded-md px-2 py-1"
+                    aria-label="TRUST - Go to homepage"
+                  >
+                    <img 
+                      src={`${import.meta.env.BASE_URL}trust-logo-new.png`} 
+                      alt="TRUST Logo" 
+                      className="h-60 w-80 object-contain"
+                    />
+                    <span className="text-2xl font-bold text-[#56F0C8]">TRUST</span>
+                  </Link>
+                </div>
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-center space-x-2" role="menubar">
-              <a 
-                href="/#services" 
-                className="text-slate-600 hover:text-slate-900 px-3 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const servicesElement = document.getElementById('services');
-                  if (servicesElement) {
-                    servicesElement.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                role="menuitem"
-                aria-label="Scroll to Our Difference section"
-              >
-                Our Difference
-              </a>
               <Link 
                 to="/" 
-                className={`${getButtonStyles('/')} focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
+                onClick={() => handleNavClick('/')}
+                className={`${getButtonStyles('/')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
                 role="menuitem"
                 aria-label="Go to Home page"
               >
@@ -69,7 +105,8 @@ const Navbar = () => {
               </Link>
               <Link 
                 to="/about" 
-                className={`${getButtonStyles('/about')} focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
+                onClick={() => handleNavClick('/about')}
+                className={`${getButtonStyles('/about')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
                 role="menuitem"
                 aria-label="Go to About Us page"
               >
@@ -77,7 +114,8 @@ const Navbar = () => {
               </Link>
               <Link 
                 to="/sponsor" 
-                className={`${getButtonStyles('/sponsor')} focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
+                onClick={() => handleNavClick('/sponsor')}
+                className={`${getButtonStyles('/sponsor')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
                 role="menuitem"
                 aria-label="Go to Sponsor / CRO page"
               >
@@ -85,20 +123,41 @@ const Navbar = () => {
               </Link>
               <Link 
                 to="/site" 
-                className={`${getButtonStyles('/site')} focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
+                onClick={() => handleNavClick('/site')}
+                className={`${getButtonStyles('/site')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
                 role="menuitem"
                 aria-label="Go to Sites / Vendors page"
               >
                 Sites / Vendors
               </Link>
-              <Link 
-                to="/#contact" 
-                className={`${getButtonStyles('/#contact', true)} focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2`}
+              <button
+                onClick={handleRequestProposalClick}
+                className={`${getButtonStyles('/#contact', true)} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
                 role="menuitem"
                 aria-label="Request a proposal"
               >
                 Request Proposal
-              </Link>
+              </button>
+              
+              {/* Sign In / Sign Up Section */}
+              <div className="ml-4 flex items-center space-x-2 border-l border-gray-300 pl-4">
+                <Link
+                  to="/admin/login"
+                  className="px-3 py-2 text-sm font-medium text-[#10224E] hover:text-[#16B1F0] transition-colors focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2 rounded-md"
+                  role="menuitem"
+                  aria-label="Sign in to admin dashboard"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/admin/login"
+                  className="px-4 py-2 text-sm font-bold text-white bg-[#16B1F0] rounded-md hover:bg-[#10224E] transition-colors focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2"
+                  role="menuitem"
+                  aria-label="Sign up for admin access"
+                >
+                  Sign Up
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -143,26 +202,13 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="md:hidden" id="mobile-menu" role="menu" aria-label="Mobile navigation">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-slate-200">
-            <a 
-              href="/#services" 
-              className="text-slate-600 hover:text-slate-900 block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsMobileMenuOpen(false);
-                const servicesElement = document.getElementById('services');
-                if (servicesElement) {
-                  servicesElement.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              role="menuitem"
-              aria-label="Scroll to Our Difference section"
-            >
-              Our Difference
-            </a>
             <Link 
               to="/" 
-              className={`block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${isActive('/') ? 'bg-teal-100 text-teal-800' : 'text-slate-600 hover:text-slate-900'}`}
-              onClick={() => setIsMobileMenuOpen(false)}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleNavClick('/');
+              }}
               role="menuitem"
               aria-label="Go to Home page"
             >
@@ -170,8 +216,11 @@ const Navbar = () => {
             </Link>
             <Link 
               to="/about" 
-              className={`block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${isActive('/about') ? 'bg-teal-100 text-teal-800' : 'text-slate-600 hover:text-slate-900'}`}
-              onClick={() => setIsMobileMenuOpen(false)}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/about') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleNavClick('/about');
+              }}
               role="menuitem"
               aria-label="Go to About Us page"
             >
@@ -179,8 +228,11 @@ const Navbar = () => {
             </Link>
             <Link 
               to="/sponsor" 
-              className={`block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${isActive('/sponsor') ? 'bg-teal-100 text-teal-800' : 'text-slate-600 hover:text-slate-900'}`}
-              onClick={() => setIsMobileMenuOpen(false)}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/sponsor') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleNavClick('/sponsor');
+              }}
               role="menuitem"
               aria-label="Go to Sponsor / CRO page"
             >
@@ -188,35 +240,58 @@ const Navbar = () => {
             </Link>
             <Link 
               to="/site" 
-              className={`block px-3 py-2 rounded-md text-base font-medium focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 ${isActive('/site') ? 'bg-teal-100 text-teal-800' : 'text-slate-600 hover:text-slate-900'}`}
-              onClick={() => setIsMobileMenuOpen(false)}
+              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/site') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                handleNavClick('/site');
+              }}
               role="menuitem"
               aria-label="Go to Sites / Vendors page"
             >
               Sites / Vendors
             </Link>
-            <Link 
-              to="/#contact" 
-              className="block px-3 py-2 rounded-md text-base font-medium bg-teal-600 text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
+            <button
               onClick={(e) => {
                 e.preventDefault();
                 setIsMobileMenuOpen(false);
-                const contactElement = document.getElementById('contact');
-                if (contactElement) {
-                  contactElement.scrollIntoView({ behavior: 'smooth' });
-                }
+                handleRequestProposalClick(e);
               }}
+              className="block px-3 py-2 rounded-md text-base font-medium bg-[#16B1F0] text-white hover:bg-[#10224E] focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2"
               role="menuitem"
               aria-label="Request a proposal"
             >
               Request Proposal
-            </Link>
+            </button>
+            
+            {/* Mobile Sign In / Sign Up Section */}
+            <div className="border-t border-gray-200 pt-3 mt-3">
+              <div className="space-y-2">
+                <Link
+                  to="/admin/login"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-[#10224E] hover:text-[#16B1F0] focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
+                  aria-label="Sign in to admin dashboard"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/admin/login"
+                  className="block px-3 py-2 rounded-md text-base font-medium bg-[#16B1F0] text-white hover:bg-[#10224E] focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
+                  aria-label="Sign up for admin access"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       )}
     </header>
+    </>
   );
 };
 
 export default Navbar;
-
