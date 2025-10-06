@@ -13,6 +13,12 @@ const Navbar = () => {
     setShowRoleModal(true);
   };
 
+  const handleSignUpClick = (e) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false); // Close mobile menu when opening role modal
+    setShowRoleModal(true);
+  };
+
   const handleRoleSelect = (role) => {
     setShowRoleModal(false);
     // Navigate to home page and trigger form opening
@@ -166,14 +172,14 @@ const Navbar = () => {
                 >
                   Sign In
                 </Link>
-                <Link
-                  to="/admin/login"
+                <button
+                  onClick={handleSignUpClick}
                   className="px-4 py-2 text-sm font-bold text-white bg-[#16B1F0] rounded-md hover:bg-[#10224E] transition-colors focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2"
                   role="menuitem"
-                  aria-label="Sign up for admin access"
+                  aria-label="Sign up for access"
                 >
                   Sign Up
-                </Link>
+                </button>
               </div>
             </div>
           </div>
@@ -322,15 +328,17 @@ const Navbar = () => {
                 >
                   Sign In
                 </Link>
-                <Link
-                  to="/admin/login"
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleSignUpClick({ preventDefault: () => {} });
+                  }}
                   className="block px-3 py-2 rounded-md text-base font-medium bg-[#16B1F0] text-white hover:bg-[#10224E] focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2"
-                  onClick={() => setIsMobileMenuOpen(false)}
                   role="menuitem"
-                  aria-label="Sign up for admin access"
+                  aria-label="Sign up for access"
                 >
                   Sign Up
-                </Link>
+                </button>
               </div>
             </div>
           </div>
