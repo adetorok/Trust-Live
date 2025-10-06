@@ -1,12 +1,13 @@
-name: Deploy to GitHub Pages (TRUST)
+name: Deploy to GitHub Pages (TRUST) - DISABLED
 
 on:
-  push:
-    branches: [ master, main ]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/deploy-gh-pages.yml'
-  workflow_dispatch:
+  # DISABLED - Using Hostinger deployment instead
+  # push:
+  #   branches: [ master, main ]
+  #   paths:
+  #     - 'frontend/**'
+  #     - '.github/workflows/deploy-gh-pages.yml'
+  # workflow_dispatch:
 
 permissions:
   contents: write

@@ -30,11 +30,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build for Hostinger (no base path)
         env:
           # Optional: set this in repo secrets if your API is hosted elsewhere
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
-        run: npm run build
+        run: |
+          # Remove base path for Hostinger deployment
+          node -e "
+          const fs = require('fs');
+          const path = './vite.config.js';
+          let content = fs.readFileSync(path, 'utf8');
+          
+          // Remove or comment out base configuration for Hostinger
+          content = content.replace(/base:\s*['\"][^'\"]*['\"],?\s*/g, '');
+          content = content.replace(/\/\/\s*base:\s*['\"][^'\"]*['\"]/g, '// base: \"/\"');
+          
+          fs.writeFileSync(path, content);
+          console.log('Removed base path for Hostinger deployment');
+          "
+          npm run build
 
       - name: Deploy via SFTP to Hostinger
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4

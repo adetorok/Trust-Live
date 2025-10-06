@@ -1,12 +1,13 @@
-name: Deploy Frontend to GitHub Pages
+name: Deploy Frontend to GitHub Pages (DISABLED)
 
 on:
-  push:
-    branches: [ master, main ]
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/deploy-frontend.yml'
-  workflow_dispatch:
+  # DISABLED - Using Hostinger deployment instead
+  # push:
+  #   branches: [ master, main ]
+  #   paths:
+  #     - 'frontend/**'
+  #     - '.github/workflows/deploy-frontend.yml'
+  # workflow_dispatch:
 
 permissions:
   contents: write
