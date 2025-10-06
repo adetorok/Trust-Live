@@ -222,7 +222,7 @@ const Home = () => {
             </div>
           </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
             <button
               onClick={handleRequestProposalClick}
               className="bg-[#16B1F0] text-white font-bold px-8 py-3 rounded-lg hover:bg-[#10224E] transition-colors shadow-lg text-lg text-center"
