@@ -31,12 +31,20 @@ jobs:
         run: npm ci
 
       - name: Run linting
-        run: npm run lint || echo "Linting completed with warnings"
+        run: |
+          npm run lint || echo "Linting completed with warnings"
+          echo "Linting step completed"
 
       - name: Build for GitHub Pages
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://api.trustclinicalservices.com' }}
         run: |
+          echo "Starting build process..."
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Current directory: $(pwd)"
+          echo "Contents: $(ls -la)"
+          
           # Build with correct base path for Trust-Live repository
           npm run build
           
@@ -44,7 +52,9 @@ jobs:
           cp dist/index.html dist/404.html
           
           # List built files for debugging
+          echo "Build completed. Contents of dist/:"
           ls -la dist/
+          echo "Build step completed successfully"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -52,3 +62,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: frontend/dist
           publish_branch: gh-pages
+          allow_empty_commit: true
+          force_orphan: true

@@ -1,0 +1,20 @@
+name: Simple Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Test Node
+        run: |
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
+          echo "Current directory: $(pwd)"
+          echo "Contents: $(ls -la)"
+          echo "Frontend contents: $(ls -la frontend/)"
+          echo "Test completed successfully"
