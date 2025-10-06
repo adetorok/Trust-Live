@@ -84,6 +84,7 @@ const Navbar = () => {
                       src={`${import.meta.env.BASE_URL}cg.png`} 
                       alt="TRUST Logo" 
                       className="h-16 w-auto object-contain"
+                      onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cg.png'; }}
                     />
                   </Link>
                 </div>
