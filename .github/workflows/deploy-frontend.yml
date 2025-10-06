@@ -51,6 +51,9 @@ jobs:
           # Create 404.html for SPA routing (React Router)
           cp dist/index.html dist/404.html
           
+          # Create .nojekyll file to prevent Jekyll processing
+          touch dist/.nojekyll
+          
           # List built files for debugging
           echo "Build completed. Contents of dist/:"
           ls -la dist/
@@ -64,3 +67,4 @@ jobs:
           publish_branch: gh-pages
           allow_empty_commit: true
           force_orphan: true
+          keep_files: false
