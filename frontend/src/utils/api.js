@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.trustclinicalservices.com/api';
 const DEFAULT_TIMEOUT_MS = 12000; // 12s network timeout
 
 // Helper function to get auth headers
