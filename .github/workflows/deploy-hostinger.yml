@@ -1,14 +1,15 @@
-name: Deploy frontend to Hostinger (SFTP)
+name: Deploy frontend to Hostinger (SFTP) - DISABLED
 
 on:
-  push:
-    branches:
-      - master
-      - main
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/deploy-hostinger.yml'
-  workflow_dispatch:
+  # DISABLED - Using GitHub Pages deployment instead
+  # push:
+  #   branches:
+  #     - master
+  #     - main
+  #   paths:
+  #     - 'frontend/**'
+  #     - '.github/workflows/deploy-hostinger.yml'
+  # workflow_dispatch:
 
 jobs:
   build-and-deploy:
