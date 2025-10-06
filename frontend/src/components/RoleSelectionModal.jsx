@@ -3,31 +3,32 @@ import { useState, useEffect } from 'react';
 const RoleSelectionModal = ({ isOpen, onClose, onRoleSelect }) => {
   const [selectedRole, setSelectedRole] = useState('');
 
-  // Lock body scroll when modal is open and handle ESC key
+  // Lock scroll (html + body) and handle ESC key
   useEffect(() => {
-    if (isOpen) {
-      // Prevent scrolling on body only (no global touch blockers)
-      const previousOverflow = document.body.style.overflow;
-      const previousOverscroll = document.body.style.overscrollBehavior;
-      document.body.style.overflow = 'hidden';
-      document.body.style.overscrollBehavior = 'contain';
+    if (!isOpen) return;
 
-      const handleEscKey = (event) => {
-        if (event.key === 'Escape') onClose();
-      };
-      document.addEventListener('keydown', handleEscKey);
+    const html = document.documentElement;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverscroll = html.style.overscrollBehavior;
+    const prevBodyOverscroll = document.body.style.overscrollBehavior;
 
-      return () => {
-        document.removeEventListener('keydown', handleEscKey);
-        document.body.style.overflow = previousOverflow;
-        document.body.style.overscrollBehavior = previousOverscroll;
-      };
-    }
+    html.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    html.style.overscrollBehavior = 'contain';
+    document.body.style.overscrollBehavior = 'contain';
 
-    // Cleanup when closed
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEscKey);
+
     return () => {
-      document.body.style.overflow = '';
-      document.body.style.overscrollBehavior = '';
+      document.removeEventListener('keydown', handleEscKey);
+      html.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      html.style.overscrollBehavior = prevHtmlOverscroll;
+      document.body.style.overscrollBehavior = prevBodyOverscroll;
     };
   }, [isOpen, onClose]);
 
@@ -41,14 +42,18 @@ const RoleSelectionModal = ({ isOpen, onClose, onRoleSelect }) => {
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4"
       onClick={onClose}
+      onWheel={(e) => e.preventDefault()}
+      onTouchMove={(e) => e.preventDefault()}
+      role="dialog"
+      aria-modal="true"
     >
-      {/* Disable navbar and all page interactions */}
-      <div className="fixed inset-0 bg-black bg-opacity-20 z-40" />
+      {/* Dim page and block interaction */}
+      <div className="fixed inset-0 bg-black/20 z-[90]" />
       
       <div 
-        className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative z-50"
+        className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-auto p-8 relative z-[110]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text-center mb-8">
