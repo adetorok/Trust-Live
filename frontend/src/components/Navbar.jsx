@@ -67,7 +67,7 @@ const Navbar = () => {
       />
       <header className={`bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50 ${showRoleModal ? 'pointer-events-none opacity-50' : ''}`} role="banner">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-24">
                 <div className="flex-shrink-0">
                   <Link 
                     to="/" 
@@ -75,9 +75,9 @@ const Navbar = () => {
                     aria-label="TRUST - Go to homepage"
                   >
                     <img 
-                      src={`${import.meta.env.BASE_URL}cg.png`} 
+                      src="/cg.png" 
                       alt="TRUST Logo" 
-                      className="h-12 w-auto object-contain"
+                      className="h-16 w-auto object-contain"
                     />
                   </Link>
                 </div>

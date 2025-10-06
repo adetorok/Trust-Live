@@ -316,8 +316,16 @@ const Home = () => {
                 </p>
               </div>
             </div>
-            <div className="relative h-80 w-full bg-gradient-to-br from-[#16B1F0] to-[#56F0C8] rounded-xl shadow-lg flex items-center justify-center">
-              <div className="text-center text-white p-8">
+            <div 
+              className="relative h-80 w-full rounded-xl shadow-lg flex items-center justify-center bg-cover bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url('/trust (11).png')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-[#16B1F0]/80 to-[#56F0C8]/80 rounded-xl"></div>
+              <div className="relative text-center text-white p-8 z-10">
                 <div className="text-6xl mb-4">🤝</div>
                 <h3 className="text-2xl font-bold mb-2">Community Collaboration</h3>
                 <p className="text-xl font-semibold">
