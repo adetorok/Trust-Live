@@ -72,7 +72,7 @@ const Navbar = () => {
         onRoleSelect={handleRoleSelect}
       />
       <header className={`bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50 ${showRoleModal ? 'pointer-events-none opacity-50' : ''}`} role="banner">
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
+      <nav className="container mx-auto max-w-screen-lg px-2 sm:px-4 lg:px-6" role="navigation" aria-label="Main navigation">
         <div className="flex items-center justify-between h-40">
                 <div className="flex-shrink-0">
                   <Link 
