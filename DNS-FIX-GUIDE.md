@@ -16,7 +16,7 @@ Your domain is loading content from Hostinger instead of GitHub Pages because:
 4. Click **Save**
 5. **Uncheck** "Enforce HTTPS" (if enabled)
 
-**Result**: Your site will be available at https://adetorok.github.io/TRUST/
+**Result**: Your site will be available at https://adetorok.github.io/Trust-Live/
 
 ### **Step 2: Verify GitHub Pages Deployment**
 
@@ -28,13 +28,13 @@ Your domain is loading content from Hostinger instead of GitHub Pages because:
 
 ### **Step 3: Test Your Site**
 
-- **GitHub Pages URL**: https://adetorok.github.io/TRUST/
+- **GitHub Pages URL**: https://adetorok.github.io/Trust-Live/
 - **Your Custom Domain**: Will redirect to GitHub Pages (if configured)
 
 ## 🔍 **How to Verify It's Working**
 
 ### **Website Check**
-- **GitHub Pages**: https://adetorok.github.io/TRUST/ (should load your site)
+- **GitHub Pages**: https://adetorok.github.io/Trust-Live/ (should load your site)
 - **Custom Domain**: Should redirect to GitHub Pages URL
 
 ### **Deployment Check**
@@ -45,7 +45,7 @@ Your domain is loading content from Hostinger instead of GitHub Pages because:
 ## 🚀 **Current Deployment Setup**
 
 After this fix, you'll have:
-- **Main Site**: https://adetorok.github.io/TRUST/ (GitHub Pages)
+- **Main Site**: https://adetorok.github.io/Trust-Live/ (GitHub Pages)
 - **Custom Domain**: Redirects to GitHub Pages (optional)
 - **Hostinger**: Disabled (not used)
 
