@@ -31,30 +31,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build with base=/TRUST/
+      - name: Build for GitHub Pages
         env:
           VITE_API_URL: ${{ secrets.VITE_API_URL || 'https://api.trustclinicalservices.com' }}
         run: |
-          # Update vite.config.js to set base path for GitHub Pages
-          node -e "
-          const fs = require('fs');
-          const path = './vite.config.js';
-          let content = fs.readFileSync(path, 'utf8');
-          
-          // Replace or add base configuration
-          if (content.includes('base:')) {
-            content = content.replace(/base:\s*['\"][^'\"]*['\"]/, 'base: \"/TRUST/\"');
-          } else {
-            content = content.replace(/export default defineConfig\(\{/, 'export default defineConfig({\n  base: \"/TRUST/\",');
-          }
-          
-          fs.writeFileSync(path, content);
-          console.log('Updated vite.config.js with base path');
-          "
-          
+          # Build with correct base path for Trust-Live repository
           npm run build
           
-          # Create 404.html for SPA routing
+          # Create 404.html for SPA routing (React Router)
           cp dist/index.html dist/404.html
 
       - name: Deploy to GitHub Pages

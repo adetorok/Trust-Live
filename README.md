@@ -15,7 +15,7 @@ TRUST Clinical Services provides a complete platform for clinical trial recruitm
 
 ## 🚀 Live Demo
 
-- **Frontend**: [https://adetorok.github.io/TRUST/](https://adetorok.github.io/TRUST/)
+- **Frontend**: [https://adetorok.github.io/Trust-Live/](https://adetorok.github.io/Trust-Live/)
 - **Backend API**: [https://api.trustclinicalservices.com](https://api.trustclinicalservices.com)
 
 ## 🛠️ Tech Stack

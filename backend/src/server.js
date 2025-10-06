@@ -20,7 +20,14 @@ const app = express();
 
 // Security & basics
 app.use(helmet());
-app.use(cors({ origin: process.env.BASE_URL || 'http://localhost:5173', credentials: true }));
+app.use(cors({ 
+  origin: [
+    'https://adetorok.github.io', // GitHub Pages
+    'http://localhost:5173', // Local development
+    'http://localhost:3000'  // Alternative local port
+  ], 
+  credentials: true 
+}));
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.use(morgan('dev'));
