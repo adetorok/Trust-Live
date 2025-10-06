@@ -91,7 +91,7 @@ const FAQ = () => {
       <section className="relative bg-gradient-to-br from-teal-50 to-blue-50 py-12 sm:py-16 lg:py-20">
         {/* Full hero background icon */}
         <img
-          src="/Trust icon.png"
+          src={`${import.meta.env.BASE_URL}Trust icon.png`}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-contain opacity-30 pointer-events-none select-none transform origin-center scale-[4] -translate-x-[8%]"
