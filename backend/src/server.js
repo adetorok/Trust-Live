@@ -15,6 +15,7 @@ import proposalsRoutes from './routes/proposals.routes.js';
 import studiesRoutes from './routes/studies.routes.js';
 import sitesRoutes from './routes/sites.routes.js';
 import filesRoutes from './routes/files.routes.js';
+import { User } from './models/User.js';
 
 const app = express();
 
@@ -56,10 +57,34 @@ app.use(errorHandler);
 
 // Start
 const PORT = process.env.PORT || 4000;
-connectDB(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/trust').then(() => {
+connectDB(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/trust').then(async () => {
+  await ensureDefaultAdmin();
   app.listen(PORT, () => {
     console.log(`TRUST API running on http://localhost:${PORT}`);
   });
 });
+
+async function ensureDefaultAdmin() {
+  try {
+    const email = process.env.DEMO_ADMIN_EMAIL || 'admin@trust.com';
+    const password = process.env.DEMO_ADMIN_PASSWORD || 'admin123';
+    const existing = await User.findOne({ email });
+    if (!existing) {
+      const passwordHash = await User.hashPassword(password);
+      await User.create({
+        email,
+        name: 'Admin User',
+        passwordHash,
+        role: 'admin',
+        isActive: true
+      });
+      console.log(`Bootstrap admin created: ${email}`);
+    } else {
+      console.log(`Bootstrap admin exists: ${email}`);
+    }
+  } catch (err) {
+    console.error('Bootstrap admin error:', err?.message || err);
+  }
+}
 
 
