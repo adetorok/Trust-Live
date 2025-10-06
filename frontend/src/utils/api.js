@@ -1,5 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://trust-live.onrender.com/api';
-const DEFAULT_TIMEOUT_MS = 12000; // 12s network timeout
+const DEFAULT_TIMEOUT_MS = 30000; // 30s network timeout to handle cold starts
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
@@ -53,6 +53,8 @@ export const api = {
     return apiCall('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
+      // Longer timeout for Render cold starts
+      timeoutMs: 30000
     });
   },
 
