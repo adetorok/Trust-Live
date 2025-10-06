@@ -6,48 +6,28 @@ const RoleSelectionModal = ({ isOpen, onClose, onRoleSelect }) => {
   // Lock body scroll when modal is open and handle ESC key
   useEffect(() => {
     if (isOpen) {
-      // Prevent scrolling on body
+      // Prevent scrolling on body only (no global touch blockers)
+      const previousOverflow = document.body.style.overflow;
+      const previousOverscroll = document.body.style.overscrollBehavior;
       document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      
-      // Handle ESC key press
+      document.body.style.overscrollBehavior = 'contain';
+
       const handleEscKey = (event) => {
-        if (event.key === 'Escape') {
-          onClose();
-        }
+        if (event.key === 'Escape') onClose();
       };
-      
-      // Prevent touch events on background
-      const preventTouch = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      };
-      
       document.addEventListener('keydown', handleEscKey);
-      document.addEventListener('touchmove', preventTouch, { passive: false });
-      document.addEventListener('touchstart', preventTouch, { passive: false });
-      
+
       return () => {
         document.removeEventListener('keydown', handleEscKey);
-        document.removeEventListener('touchmove', preventTouch);
-        document.removeEventListener('touchstart', preventTouch);
+        document.body.style.overflow = previousOverflow;
+        document.body.style.overscrollBehavior = previousOverscroll;
       };
-    } else {
-      // Restore scrolling
-      document.body.style.overflow = 'unset';
-      document.body.style.position = 'unset';
-      document.body.style.width = 'unset';
-      document.body.style.height = 'unset';
     }
 
-    // Cleanup on unmount
+    // Cleanup when closed
     return () => {
-      document.body.style.overflow = 'unset';
-      document.body.style.position = 'unset';
-      document.body.style.width = 'unset';
-      document.body.style.height = 'unset';
+      document.body.style.overflow = '';
+      document.body.style.overscrollBehavior = '';
     };
   }, [isOpen, onClose]);
 
@@ -63,15 +43,13 @@ const RoleSelectionModal = ({ isOpen, onClose, onRoleSelect }) => {
     <div 
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={onClose}
-      style={{ touchAction: 'none' }}
     >
       {/* Disable navbar and all page interactions */}
-      <div className="fixed inset-0 bg-black bg-opacity-20 z-40" style={{ touchAction: 'none' }} />
+      <div className="fixed inset-0 bg-black bg-opacity-20 z-40" />
       
       <div 
         className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative z-50"
         onClick={(e) => e.stopPropagation()}
-        style={{ touchAction: 'auto' }}
       >
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-[#0B1220] mb-2">
