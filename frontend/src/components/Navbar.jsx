@@ -73,7 +73,7 @@ const Navbar = () => {
       />
       <header className={`bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50 ${showRoleModal ? 'pointer-events-none opacity-50' : ''}`} role="banner">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
-        <div className="flex items-center justify-between h-24">
+        <div className="flex items-center justify-between h-40">
                 <div className="flex-shrink-0">
                   <Link 
                     to="/" 
@@ -83,7 +83,7 @@ const Navbar = () => {
                     <img 
                       src={`${import.meta.env.BASE_URL}cg.png`} 
                       alt="TRUST Logo" 
-                      className="h-16 w-auto object-contain"
+                      className="h-32 md:h-40 w-auto object-contain"
                       onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cg.png'; }}
                     />
                   </Link>
