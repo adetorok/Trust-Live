@@ -75,11 +75,10 @@ const Navbar = () => {
                     aria-label="TRUST - Go to homepage"
                   >
                     <img 
-                      src={`${import.meta.env.BASE_URL}trust-logo-new.png`} 
+                      src={`${import.meta.env.BASE_URL}cg.png`} 
                       alt="TRUST Logo" 
-                      className="h-60 w-80 object-contain"
+                      className="h-12 w-auto object-contain"
                     />
-                    <span className="text-2xl font-bold text-[#56F0C8]">TRUST</span>
                   </Link>
                 </div>
           {/* Desktop Navigation */}
