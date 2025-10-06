@@ -319,7 +319,7 @@ const Home = () => {
             <div 
               className="relative h-80 w-full rounded-xl shadow-lg flex items-center justify-center bg-cover bg-center bg-no-repeat"
               style={{
-                backgroundImage: `url('/trust (11).png')`,
+                backgroundImage: `url('${import.meta.env.BASE_URL}trust (11).png')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
               }}

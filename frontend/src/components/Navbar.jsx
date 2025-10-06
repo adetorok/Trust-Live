@@ -81,7 +81,7 @@ const Navbar = () => {
                     aria-label="TRUST - Go to homepage"
                   >
                     <img 
-                      src="/cg.png" 
+                      src={`${import.meta.env.BASE_URL}cg.png`} 
                       alt="TRUST Logo" 
                       className="h-16 w-auto object-contain"
                     />
