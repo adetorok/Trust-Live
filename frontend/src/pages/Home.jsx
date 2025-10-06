@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import RoleSelectionModal from '../components/RoleSelectionModal';
+import EnhancedProposalForm from '../components/EnhancedProposalForm';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -11,6 +12,8 @@ const Home = () => {
   const [successEmail, setSuccessEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showRoleModal, setShowRoleModal] = useState(false);
+  const [showEnhancedForm, setShowEnhancedForm] = useState(false);
+  const [enhancedFormType, setEnhancedFormType] = useState('sponsor');
 
   const beforeData = {
     labels: ['Unqualified Leads', 'Contacted but Lost', 'Enrolled'],
@@ -57,19 +60,6 @@ const Home = () => {
     setShowForm(false);
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission delay
-    setTimeout(() => {
-      const formData = new FormData(e.target);
-      const email = formData.get('email');
-      setSuccessEmail(email);
-      setIsSubmitting(false);
-    }, 1500);
-  };
-
   const handleRequestProposalClick = (e) => {
     e.preventDefault();
     setShowRoleModal(true);
@@ -77,18 +67,37 @@ const Home = () => {
 
   const handleRoleSelect = (role) => {
     setFormType(role);
-    setShowForm(true);
+    setEnhancedFormType(role);
+    setShowEnhancedForm(true);
     setSuccessEmail('');
-    // Scroll to the form section with longer timeout to ensure rendering
-    setTimeout(() => {
-      const contactElement = document.getElementById('contact-form-section');
-      if (contactElement) {
-        contactElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      } else {
-        console.log('Contact form section not found');
-      }
-    }, 300);
   };
+
+  // Enhanced form handlers
+  const handleOpenSponsorForm = () => {
+    setEnhancedFormType('sponsor');
+    setShowEnhancedForm(true);
+  };
+
+  const handleOpenSiteForm = () => {
+    setEnhancedFormType('site');
+    setShowEnhancedForm(true);
+  };
+
+  const handleEnhancedFormSuccess = () => {
+    setSuccessEmail('Thank you for your proposal request! We will contact you soon.');
+    setShowEnhancedForm(false);
+    setShowForm(true); // Show success message in the contact section
+  };
+
+  // Expose functions globally for other pages
+  useEffect(() => {
+    window.__trustOpenSponsorForm = handleOpenSponsorForm;
+    window.__trustOpenSiteForm = handleOpenSiteForm;
+    return () => {
+      delete window.__trustOpenSponsorForm;
+      delete window.__trustOpenSiteForm;
+    };
+  }, []);
 
   // Handle scroll to contact section when URL hash is #contact
   useEffect(() => {
@@ -111,14 +120,7 @@ const Home = () => {
         }
       }
 
-      // If a pending role was stored by navbar, open the form once on load
-      try {
-        const pending = localStorage.getItem('pendingRole');
-        if (pending) {
-          localStorage.removeItem('pendingRole');
-          window.__trustOpenContactForm(pending);
-        }
-      } catch {}
+      // Auto-opening removed to prevent unwanted scrolling
     };
 
     handleHashChange();
@@ -127,7 +129,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="text-slate-800">
+    <div className={`text-slate-800 ${showRoleModal ? 'pointer-events-none' : ''}`}>
       <RoleSelectionModal
         isOpen={showRoleModal}
         onClose={() => setShowRoleModal(false)}
@@ -314,15 +316,12 @@ const Home = () => {
                 </p>
               </div>
             </div>
-            <div className="relative h-80 w-full">
-              <img
-                src={`${import.meta.env.BASE_URL}why-trust-works.png`}
-                alt="Collaborative group discussion showing community engagement and trust"
-                className="rounded-xl shadow-lg object-cover w-full h-full"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 to-transparent rounded-xl flex items-end p-6">
-                <p className="text-white text-xl font-semibold">
-                  Community collaboration drives enrollment success.
+            <div className="relative h-80 w-full bg-gradient-to-br from-[#16B1F0] to-[#56F0C8] rounded-xl shadow-lg flex items-center justify-center">
+              <div className="text-center text-white p-8">
+                <div className="text-6xl mb-4">🤝</div>
+                <h3 className="text-2xl font-bold mb-2">Community Collaboration</h3>
+                <p className="text-xl font-semibold">
+                  Drives enrollment success through trusted relationships and local engagement.
                 </p>
               </div>
             </div>
@@ -608,144 +607,20 @@ const Home = () => {
                 Your proposal request has been successfully submitted.
               </p>
               <p className="text-green-600 text-base">
-                A team member will get back to you shortly at <strong>{successEmail}</strong> with your personalized proposal.
+                A team member will get back to you shortly with your personalized proposal.
               </p>
             </div>
-          ) : (
-            <div className="bg-white rounded-2xl shadow-lg p-8">
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                  Request Your Proposal
-                </h3>
-                <p className="text-slate-600">
-                  Tell us about your organization and we'll create a customized proposal
-                </p>
-              </div>
-              
-              <form className="space-y-6" onSubmit={handleFormSubmit}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div>
-                    <label htmlFor="firstName" className="block text-sm font-medium text-slate-700 mb-2">
-                      First Name
-                    </label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                      placeholder="Enter your first name"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="lastName" className="block text-sm font-medium text-slate-700 mb-2">
-                      Last Name
-                    </label>
-                    <input
-                      type="text"
-                      id="lastName"
-                      name="lastName"
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                      placeholder="Enter your last name"
-                      required
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-                    Company Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="name@company.com"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-2">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    name="phone"
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="(555) 123-4567"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="company" className="block text-sm font-medium text-slate-700 mb-2">
-                    Company / Organization
-                  </label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="Your company name"
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <label htmlFor="organizationType" className="block text-sm font-medium text-slate-700 mb-2">
-                    Organization Type
-                  </label>
-                  <select
-                    id="organizationType"
-                    name="organizationType"
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                    required
-                  >
-                    <option value="">Select your organization type...</option>
-                    <option value="sponsor">Pharmaceutical Company</option>
-                    <option value="cro">Contract Research Organization (CRO)</option>
-                    <option value="biotech">Biotech Firm</option>
-                    <option value="device">Medical Device Manufacturer</option>
-                    <option value="hospital">Hospital / Medical Center</option>
-                    <option value="research-center">Research Center</option>
-                    <option value="physician-practice">Physician Practice</option>
-                    <option value="site-management">Site Management Organization</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label htmlFor="studyDetails" className="block text-sm font-medium text-slate-700 mb-2">
-                    Study Details (Optional)
-                  </label>
-                  <textarea
-                    id="studyDetails"
-                    name="studyDetails"
-                    rows="4"
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                    placeholder="Tell us about your study, timeline, or specific requirements..."
-                  ></textarea>
-                </div>
-                
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full font-bold py-4 rounded-lg transition-colors text-lg ${
-                    isSubmitting 
-                      ? 'bg-[#A4B0CC] text-[#10224E] cursor-not-allowed' 
-                      : 'bg-[#16B1F0] text-white hover:bg-[#10224E]'
-                  }`}
-                >
-                  {isSubmitting ? 'Submitting...' : 'Request My Proposal'}
-                </button>
-              </form>
-            </div>
-          )}
+          ) : null}
         </div>
       </section>
+
+      {/* Enhanced Proposal Form Modal */}
+      <EnhancedProposalForm
+        isOpen={showEnhancedForm}
+        onClose={() => setShowEnhancedForm(false)}
+        formType={enhancedFormType}
+        onSuccess={handleEnhancedFormSuccess}
+      />
     </div>
   );
 };

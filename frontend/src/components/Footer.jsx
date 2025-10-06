@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 function Footer() {
   return (
-    <footer className="bg-slate-900 text-white">
+    <footer className="bg-slate-900 text-white" id="contact-section">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 {/* Column 1: Contact Info */}
@@ -34,6 +34,9 @@ function Footer() {
               <li><Link to="/#contact" className="text-slate-400 hover:text-white text-sm">Request Proposal</Link></li>
               <li><Link to="/sponsor" className="text-slate-400 hover:text-white text-sm">Sponsor / CRO</Link></li>
               <li><Link to="/site" className="text-slate-400 hover:text-white text-sm">Sites / Vendors</Link></li>
+              <li><Link to="/faq" className="text-slate-400 hover:text-white text-sm">FAQ</Link></li>
+              <li><Link to="/organization" className="text-slate-400 hover:text-white text-sm">Organization</Link></li>
+              <li><Link to="/services" className="text-slate-400 hover:text-white text-sm">Our Services</Link></li>
             </ul>
           </div>
           {/* Column 3: Core Services */}

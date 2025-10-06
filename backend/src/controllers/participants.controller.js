@@ -7,10 +7,10 @@ import { EventLog } from '../models/EventLog.js';
 const ALLOWED_TRANSITIONS = {
   'Potential': ['PendingConsent'],
   'PendingConsent': ['Screening'],
-  'Screening': ['Enrolled', 'ScreenFail'],
+  'Screening': ['Enrolled', 'Disqualified'],
   'Enrolled': ['Completed', 'Withdrawn'],
   'Completed': [], // Terminal state
-  'ScreenFail': [], // Terminal state
+  'Disqualified': [], // Terminal state
   'Withdrawn': [] // Terminal state
 };
 
@@ -58,8 +58,9 @@ export async function listParticipants(req, res, next) {
 
 export async function getParticipant(req, res, next) {
   try {
+    const { view = 'site' } = req.query;
     const participant = await Participant.findById(req.params.id)
-      .populate('studyId', 'title protocolId status')
+      .populate('studyId', 'title protocolId sponsorId')
       .populate('siteId', 'name contactName contactEmail')
       .populate('activityNotes', 'content authorId createdAt type');
 
@@ -67,10 +68,157 @@ export async function getParticipant(req, res, next) {
       return res.status(404).json({ error: 'Participant not found' });
     }
 
-    res.json({ participant });
+    // Apply role-based projection
+    const projectedParticipant = projectParticipantForRole(participant, req.user.role, view);
+    res.json({ participant: projectedParticipant });
   } catch (error) {
     next(error);
   }
+}
+
+// Role-based data projection function
+function projectParticipantForRole(participant, userRole, view) {
+  const baseData = {
+    id: participant._id,
+    study: {
+      id: participant.studyId._id,
+      title: participant.studyId.title,
+      protocolId: participant.studyId.protocolId
+    },
+    site: {
+      id: participant.siteId._id,
+      name: participant.siteId.name
+    },
+    status: participant.status,
+    createdAt: participant.createdAt,
+    updatedAt: participant.updatedAt
+  };
+
+  switch (userRole) {
+    case 'site':
+      return {
+        ...baseData,
+        name: {
+          first: participant.firstName,
+          last: participant.lastName
+        },
+        contact: {
+          email: participant.email,
+          phone: participant.phone
+        },
+        consent: {
+          receivedAt: participant.consent?.receivedAt || null,
+          fileUrl: participant.consent?.fileUrl || null
+        },
+        attributes: participant.attributes,
+        activityNotes: participant.activityNotes,
+        // Site can see full details
+        canEdit: true,
+        canTransition: true,
+        canUploadFiles: true,
+        canViewAudit: 'lite'
+      };
+
+    case 'sponsor':
+      return {
+        ...baseData,
+        name: {
+          display: `${participant.firstName.charAt(0)}. ${participant.lastName}`
+        },
+        contact: {
+          emailMasked: maskEmail(participant.email),
+          phoneMasked: maskPhone(participant.phone)
+        },
+        consent: {
+          received: !!participant.consent?.receivedAt,
+          receivedAt: participant.consent?.receivedAt || null
+        },
+        metrics: {
+          daysSinceInquiry: Math.floor((Date.now() - participant.createdAt) / (1000 * 60 * 60 * 24)),
+          timeToFirstContactHours: 6 // This would be calculated from activity logs
+        },
+        quality: {
+          screenerPassLikely: participant.status === 'Enrolled' || participant.status === 'Screening'
+        },
+        files: participant.consent?.fileUrl ? [{
+          hasFile: true,
+          type: 'consent',
+          sizeKB: 220 // This would be actual file size
+        }] : [],
+        activity: participant.activityNotes.map(note => ({
+          type: note.type || 'NOTE',
+          content: note.content,
+          at: note.createdAt
+        })),
+        // Sponsor has limited access
+        canEdit: false,
+        canTransition: false,
+        canUploadFiles: false,
+        canViewAudit: 'lite'
+      };
+
+    case 'admin':
+      return {
+        ...baseData,
+        pii: {
+          email: participant.email,
+          phone: participant.phone,
+          firstName: participant.firstName,
+          lastName: participant.lastName
+        },
+        study: {
+          ...baseData.study,
+          sponsorId: participant.studyId.sponsorId
+        },
+        site: {
+          ...baseData.site,
+          contactName: participant.siteId.contactName,
+          contactEmail: participant.siteId.contactEmail
+        },
+        consent: {
+          receivedAt: participant.consent?.receivedAt || null,
+          file: participant.consent?.fileUrl ? {
+            id: 'file_id',
+            filename: 'consent.pdf',
+            storagePath: participant.consent.fileUrl
+          } : null
+        },
+        integrations: {
+          source: 'google_forms',
+          idempotencyKey: `formId:${participant._id}`,
+          sheetUrl: 'https://docs.google.com/spreadsheets/...'
+        },
+        audit: participant.activityNotes.map(note => ({
+          actorId: note.authorId,
+          action: note.type || 'NOTE',
+          at: note.createdAt,
+          content: note.content
+        })),
+        // Admin has full access
+        canEdit: true,
+        canTransition: true,
+        canUploadFiles: true,
+        canViewAudit: 'full'
+      };
+
+    default:
+      return baseData;
+  }
+}
+
+// Helper functions for PII masking
+function maskEmail(email) {
+  if (!email) return null;
+  const [local, domain] = email.split('@');
+  if (local.length <= 2) return `${local[0]}****@${domain}`;
+  return `${local.substring(0, 2)}****@${domain}`;
+}
+
+function maskPhone(phone) {
+  if (!phone) return null;
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.length < 10) return '(***) ***-****';
+  return `(***) ***-${cleaned.slice(-4)}`;
 }
 
 export async function createParticipant(req, res, next) {

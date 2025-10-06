@@ -8,10 +8,13 @@ export function requireAuth(req, res, next) {
     
     const payload = jwt.verify(token, process.env.JWT_SECRET || 'dev-secret');
     
+    // Handle both old and new token formats
+    const userRole = payload.role || (payload.roles && payload.roles[0]) || 'user';
+    
     // Attach user info to request
     req.user = {
       id: payload.sub,
-      role: payload.role,
+      role: userRole,
       email: payload.email,
       name: payload.name,
       sponsorId: payload.sponsorId,

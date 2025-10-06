@@ -1,7 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const RoleSelectionModal = ({ isOpen, onClose, onRoleSelect }) => {
   const [selectedRole, setSelectedRole] = useState('');
+
+  // Lock body scroll when modal is open and handle ESC key
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+      
+      // Handle ESC key press
+      const handleEscKey = (event) => {
+        if (event.key === 'Escape') {
+          onClose();
+        }
+      };
+      
+      document.addEventListener('keydown', handleEscKey);
+      
+      return () => {
+        document.removeEventListener('keydown', handleEscKey);
+      };
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
 
   const handleRoleSelect = (role) => {
     setSelectedRole(role);
@@ -12,8 +39,17 @@ const RoleSelectionModal = ({ isOpen, onClose, onRoleSelect }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      {/* Disable navbar and all page interactions */}
+      <div className="fixed inset-0 bg-black bg-opacity-20 z-40" />
+      
+      <div 
+        className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative z-50"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-[#0B1220] mb-2">
             Select Your Role

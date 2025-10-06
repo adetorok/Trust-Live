@@ -1,0 +1,35 @@
+{
+  "name": "trust-clinical-services",
+  "version": "1.0.0",
+  "description": "TRUST Clinical Trial Recruitment Platform - Full Stack MERN Application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:frontend",
+    "build:frontend": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "seed": "cd backend && npm run seed",
+    "test": "cd backend && npm test && cd ../frontend && npm test"
+  },
+  "keywords": [
+    "clinical-trials",
+    "recruitment",
+    "healthcare",
+    "mern",
+    "react",
+    "nodejs",
+    "mongodb"
+  ],
+  "author": "TRUST Clinical Services",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

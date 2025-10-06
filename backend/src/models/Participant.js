@@ -10,7 +10,7 @@ const ParticipantSchema = new mongoose.Schema(
     siteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Site', required: true },
     status: { 
       type: String, 
-      enum: ['Potential', 'PendingConsent', 'Screening', 'Enrolled', 'Completed', 'ScreenFail', 'Withdrawn'],
+      enum: ['Potential', 'PendingConsent', 'Screening', 'Enrolled', 'Completed', 'Disqualified', 'Withdrawn'],
       default: 'Potential'
     },
     consent: {
@@ -20,9 +20,10 @@ const ParticipantSchema = new mongoose.Schema(
     attributes: {
       dob: Date,
       sex: { type: String, enum: ['M', 'F', 'Other'] },
-      notes: String
-    },
-    activityNotes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }]
+        notes: String
+      },
+      activityNotes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }],
+      files: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }]
   },
   { timestamps: true }
 );

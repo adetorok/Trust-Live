@@ -11,6 +11,10 @@ import authRoutes from './routes/auth.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import sponsorsRoutes from './routes/sponsors.routes.js';
 import participantsRoutes from './routes/participants.routes.js';
+import proposalsRoutes from './routes/proposals.routes.js';
+import studiesRoutes from './routes/studies.routes.js';
+import sitesRoutes from './routes/sites.routes.js';
+import filesRoutes from './routes/files.routes.js';
 
 const app = express();
 
@@ -22,6 +26,9 @@ app.use(cookieParser());
 app.use(morgan('dev'));
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 500 }));
 
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'));
+
 // Health
 app.get('/health', (_req, res) => {
   res.json({ ok: true });
@@ -32,6 +39,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/sponsors', sponsorsRoutes);
 app.use('/api/participants', participantsRoutes);
+app.use('/api/proposals', proposalsRoutes);
+app.use('/api/studies', studiesRoutes);
+app.use('/api/sites', sitesRoutes);
+app.use('/api/files', filesRoutes);
 
 // Errors
 app.use(errorHandler);

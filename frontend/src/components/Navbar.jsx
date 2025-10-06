@@ -9,30 +9,21 @@ const Navbar = () => {
 
   const handleRequestProposalClick = (e) => {
     e.preventDefault();
+    setIsMobileMenuOpen(false); // Close mobile menu when opening role modal
     setShowRoleModal(true);
   };
 
   const handleRoleSelect = (role) => {
     setShowRoleModal(false);
-    try {
-      localStorage.setItem('pendingRole', role);
-    } catch {}
-    // Route based on role; target pages will auto-open their forms
-    if (role === 'sponsor') {
-      if (location.pathname === '/sponsor' && typeof window.__trustOpenSponsorForm === 'function') {
+    // Navigate to home page and trigger form opening
+    window.location.hash = '#/';
+    setTimeout(() => {
+      if (role === 'sponsor' && typeof window.__trustOpenSponsorForm === 'function') {
         window.__trustOpenSponsorForm();
-        return;
-      }
-      window.location.hash = '#/sponsor';
-    } else if (role === 'site') {
-      if (location.pathname === '/site' && typeof window.__trustOpenSiteForm === 'function') {
+      } else if (role === 'site' && typeof window.__trustOpenSiteForm === 'function') {
         window.__trustOpenSiteForm();
-        return;
       }
-      window.location.hash = '#/site';
-    } else {
-      window.location.hash = '#/';
-    }
+    }, 100);
   };
 
   const handleNavClick = (path) => {
@@ -74,7 +65,7 @@ const Navbar = () => {
         onClose={() => setShowRoleModal(false)}
         onRoleSelect={handleRoleSelect}
       />
-      <header className="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50" role="banner">
+      <header className={`bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50 ${showRoleModal ? 'pointer-events-none opacity-50' : ''}`} role="banner">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8" role="navigation" aria-label="Main navigation">
         <div className="flex items-center justify-between h-20">
                 <div className="flex-shrink-0">
@@ -103,32 +94,59 @@ const Navbar = () => {
               >
                 Home
               </Link>
+              <div className="relative group">
+                <button
+                  className={`${getButtonStyles('/services')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2 flex items-center`}
+                  aria-label="Our Services dropdown"
+                >
+                  Our Services
+                  <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-1">
+                    <Link
+                      to="/services"
+                      onClick={() => handleNavClick('/services')}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      All Services
+                    </Link>
+                    <Link
+                      to="/sponsor"
+                      onClick={() => handleNavClick('/sponsor')}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Sponsor & CRO
+                    </Link>
+                    <Link
+                      to="/site"
+                      onClick={() => handleNavClick('/site')}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      Site & Vendor
+                    </Link>
+                  </div>
+                </div>
+              </div>
               <Link 
-                to="/about" 
-                onClick={() => handleNavClick('/about')}
-                className={`${getButtonStyles('/about')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                to="/organization" 
+                onClick={() => handleNavClick('/organization')}
+                className={`${getButtonStyles('/organization')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
                 role="menuitem"
-                aria-label="Go to About Us page"
+                aria-label="Go to Organization page"
               >
-                About Us
+                Organization
               </Link>
               <Link 
-                to="/sponsor" 
-                onClick={() => handleNavClick('/sponsor')}
-                className={`${getButtonStyles('/sponsor')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                to="/faq" 
+                onClick={() => handleNavClick('/faq')}
+                className={`${getButtonStyles('/faq')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
                 role="menuitem"
-                aria-label="Go to Sponsor / CRO page"
+                aria-label="Go to FAQ page"
               >
-                Sponsor / CRO
-              </Link>
-              <Link 
-                to="/site" 
-                onClick={() => handleNavClick('/site')}
-                className={`${getButtonStyles('/site')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
-                role="menuitem"
-                aria-label="Go to Sites / Vendors page"
-              >
-                Sites / Vendors
+                FAQ
               </Link>
               <button
                 onClick={handleRequestProposalClick}
@@ -164,8 +182,9 @@ const Navbar = () => {
           {/* Mobile menu button */}
           <div className="md:hidden">
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500"
+              onClick={() => !showRoleModal && setIsMobileMenuOpen(!isMobileMenuOpen)}
+              disabled={showRoleModal}
+              className={`inline-flex items-center justify-center p-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-teal-500 ${showRoleModal ? 'opacity-50 cursor-not-allowed' : ''}`}
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
               aria-label={isMobileMenuOpen ? 'Close main menu' : 'Open main menu'}
@@ -199,7 +218,7 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Navigation Menu */}
-      {isMobileMenuOpen && (
+      {isMobileMenuOpen && !showRoleModal && (
         <div className="md:hidden" id="mobile-menu" role="menu" aria-label="Mobile navigation">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t border-slate-200">
             <Link 
@@ -214,41 +233,70 @@ const Navbar = () => {
             >
               Home
             </Link>
+            <div className="space-y-1">
+              <div className="px-3 py-2 text-base font-semibold text-slate-600">
+                Our Services
+              </div>
+              <Link 
+                to="/services" 
+                className={`block px-6 py-2 rounded-md text-sm font-medium ${isActive('/services') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleNavClick('/services');
+                }}
+                role="menuitem"
+                aria-label="Go to Our Services page"
+              >
+                All Services
+              </Link>
+              <Link 
+                to="/sponsor" 
+                className={`block px-6 py-2 rounded-md text-sm font-medium ${isActive('/sponsor') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleNavClick('/sponsor');
+                }}
+                role="menuitem"
+                aria-label="Go to Sponsor page"
+              >
+                Sponsor & CRO
+              </Link>
+              <Link 
+                to="/site" 
+                className={`block px-6 py-2 rounded-md text-sm font-medium ${isActive('/site') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleNavClick('/site');
+                }}
+                role="menuitem"
+                aria-label="Go to Site page"
+              >
+                Site & Vendor
+              </Link>
+            </div>
             <Link 
-              to="/about" 
-              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/about') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+              to="/organization" 
+              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/organization') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
               onClick={() => {
                 setIsMobileMenuOpen(false);
-                handleNavClick('/about');
+                handleNavClick('/organization');
               }}
               role="menuitem"
-              aria-label="Go to About Us page"
+              aria-label="Go to Organization page"
             >
-              About Us
+              Organization
             </Link>
             <Link 
-              to="/sponsor" 
-              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/sponsor') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+              to="/faq" 
+              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/faq') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
               onClick={() => {
                 setIsMobileMenuOpen(false);
-                handleNavClick('/sponsor');
+                handleNavClick('/faq');
               }}
               role="menuitem"
-              aria-label="Go to Sponsor / CRO page"
+              aria-label="Go to FAQ page"
             >
-              Sponsor / CRO
-            </Link>
-            <Link 
-              to="/site" 
-              className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/site') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                handleNavClick('/site');
-              }}
-              role="menuitem"
-              aria-label="Go to Sites / Vendors page"
-            >
-              Sites / Vendors
+              FAQ
             </Link>
             <button
               onClick={(e) => {

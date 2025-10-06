@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const AdminLogin = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,7 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,10 +18,12 @@ const AdminLogin = () => {
     setError('');
 
     try {
-      const data = await api.login(formData);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      navigate('/admin/dashboard');
+      const result = await login(formData);
+      if (result.success) {
+        navigate('/admin/dashboard');
+      } else {
+        setError(result.error || 'Login failed');
+      }
     } catch (err) {
       setError(err.message || 'Unable to connect to server');
     } finally {
@@ -39,16 +42,19 @@ const AdminLogin = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Email Address
+              Company Email Address
             </label>
             <input
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#56F0C8]"
-              placeholder="admin@trust.com"
+              placeholder="admin@company.com"
               required
             />
+            <p className="text-sm text-gray-600 mt-1">
+              Professional company email required. Personal emails not accepted.
+            </p>
           </div>
 
           <div>

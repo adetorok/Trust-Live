@@ -1,7 +1,10 @@
 export function errorHandler(err, req, res, _next) {
-  console.error(err);
   const status = err.status || 500;
-  res.status(status).json({ error: err.message || 'Internal error' });
+  const errorId = `${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+  const path = req.originalUrl;
+  const method = req.method;
+  console.error(`[${errorId}] ${method} ${path}`, err);
+  res.status(status).json({ error: err.message || 'Internal error', errorId });
 }
 
 

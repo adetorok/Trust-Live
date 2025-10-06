@@ -1,48 +1,94 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+const DEFAULT_TIMEOUT_MS = 12000; // 12s network timeout
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token && { 'Authorization': `Bearer ${token}` })
+  };
+};
+
+// Helper function for API calls
+const apiCall = async (endpoint, options = {}) => {
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || DEFAULT_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...getAuthHeaders(),
+        ...options.headers
+      },
+      signal: controller.signal
+    });
+
+    if (!response.ok) {
+      let message = 'Request failed';
+      try {
+        const error = await response.json();
+        message = error?.error || error?.message || message;
+      } catch {
+        // no json
+      }
+      throw new Error(message);
+    }
+
+    return response.json();
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      throw new Error('Request timed out');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
+};
 
 export const api = {
   // Auth endpoints
   login: async (credentials) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    return apiCall('/auth/login', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
       body: JSON.stringify(credentials),
     });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Login failed');
-    }
-    
-    return response.json();
   },
 
   logout: async () => {
-    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+    return apiCall('/auth/logout', {
       method: 'POST',
-      credentials: 'include',
     });
-    
-    if (!response.ok) {
-      throw new Error('Logout failed');
-    }
-    
-    return response.json();
   },
 
   getProfile: async () => {
-    const response = await fetch(`${API_BASE_URL}/auth/profile`, {
-      credentials: 'include',
+    return apiCall('/auth/profile');
+  },
+
+  // Admin endpoints
+  get: async (endpoint) => {
+    return apiCall(endpoint);
+  },
+
+  post: async (endpoint, data) => {
+    return apiCall(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
-    
-    if (!response.ok) {
-      throw new Error('Failed to get profile');
-    }
-    
-    return response.json();
+  },
+
+  put: async (endpoint, data) => {
+    return apiCall(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  delete: async (endpoint) => {
+    return apiCall(endpoint, {
+      method: 'DELETE',
+    });
   },
 
   // Health check
