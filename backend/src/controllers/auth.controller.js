@@ -3,7 +3,14 @@ import { User } from '../models/User.js';
 
 function signToken(user) {
   return jwt.sign(
-    { sub: user.id, roles: user.roles, email: user.email, name: user.name },
+    { 
+      sub: user.id, 
+      role: user.role, 
+      email: user.email, 
+      name: user.name,
+      sponsorId: user.sponsorId,
+      siteId: user.siteId
+    },
     process.env.JWT_SECRET || 'dev-secret',
     { expiresIn: process.env.JWT_EXPIRES || '12h' }
   );
@@ -16,9 +23,9 @@ export async function register(req, res, next) {
     const exists = await User.findOne({ email });
     if (exists) return res.status(409).json({ error: 'Email already in use' });
     const passwordHash = await User.hashPassword(password);
-    const user = await User.create({ email, name, passwordHash, roles: ['org_admin'] });
+    const user = await User.create({ email, name, passwordHash, role: 'admin' });
     const token = signToken(user);
-    return res.status(201).json({ token, user: { id: user.id, email: user.email, name: user.name, roles: user.roles } });
+    return res.status(201).json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
   } catch (e) {
     next(e);
   }
@@ -32,7 +39,7 @@ export async function login(req, res, next) {
     const ok = await user.verifyPassword(password);
     if (!ok) return res.status(401).json({ error: 'Invalid credentials' });
     const token = signToken(user);
-    return res.json({ token, user: { id: user.id, email: user.email, name: user.name, roles: user.roles } });
+    return res.json({ token, user: { id: user.id, email: user.email, name: user.name, role: user.role } });
   } catch (e) {
     next(e);
   }

@@ -9,6 +9,8 @@ import { connectDB } from './config/db.js';
 import { errorHandler } from './middleware/error.js';
 import authRoutes from './routes/auth.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import sponsorsRoutes from './routes/sponsors.routes.js';
+import participantsRoutes from './routes/participants.routes.js';
 
 const app = express();
 
@@ -28,6 +30,8 @@ app.get('/health', (_req, res) => {
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/sponsors', sponsorsRoutes);
+app.use('/api/participants', participantsRoutes);
 
 // Errors
 app.use(errorHandler);

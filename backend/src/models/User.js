@@ -4,11 +4,16 @@ import bcrypt from 'bcryptjs';
 
 const UserSchema = new mongoose.Schema(
   {
-    email: { type: String, required: true, unique: true, index: true, lowercase: true, trim: true },
     name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, index: true, lowercase: true, trim: true },
     passwordHash: { type: String, required: true },
-    roles: { type: [String], default: ['user'] },
-    orgId: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization' }
+    role: { type: String, enum: ['admin', 'sponsor', 'site'], required: true },
+    sponsorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Sponsor' },
+    siteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Site' },
+    isActive: { type: Boolean, default: true },
+    lastLoginAt: { type: Date },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
   },
   { timestamps: true }
 );
