@@ -83,7 +83,7 @@ const Navbar = () => {
                     <img 
                       src={`${import.meta.env.BASE_URL}cg.png`} 
                       alt="TRUST Logo" 
-                      className="h-32 md:h-40 w-auto object-contain m-[-30px] mr-[-90px]"
+                      className="h-32 md:h-40 w-auto object-contain m-[-30px] mr-[-90px] ml-[30px]"
                       onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = '/cg.png'; }}
                     />
                   </Link>
