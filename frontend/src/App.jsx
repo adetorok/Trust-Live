@@ -13,6 +13,7 @@ import Organization from './pages/Organization';
 import OurServices from './pages/OurServices';
 import SponsorLanding from './pages/SponsorLanding';
 import SiteLanding from './pages/SiteLanding';
+import AdminSettings from './pages/AdminSettings';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/sponsor/dashboard" element={<SponsorDashboard />} />
             <Route path="/site/dashboard" element={<SiteDashboard />} />
+          <Route path="/settings" element={<AdminSettings />} />
           </Routes>
         </main>
         <Footer />

@@ -23,32 +23,7 @@ const Organization = () => {
     // You can add success handling here if needed
   };
 
-  const team = [
-    {
-      name: "Dr. Sarah Johnson",
-      title: "Chief Executive Officer",
-      bio: "20+ years in clinical research with expertise in oncology and rare disease trials. Former VP of Clinical Operations at major CRO.",
-      image: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=300&h=300&fit=crop&crop=face"
-    },
-    {
-      name: "Michael Chen",
-      title: "Chief Technology Officer",
-      bio: "Technology leader with 15+ years building healthcare platforms. Former Director of Engineering at leading health tech company.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-    },
-    {
-      name: "Dr. Maria Rodriguez",
-      title: "Chief Medical Officer",
-      bio: "Board-certified physician with extensive experience in clinical trial design and regulatory affairs. MD from Johns Hopkins.",
-      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=300&fit=crop&crop=face"
-    },
-    {
-      name: "James Wilson",
-      title: "VP of Operations",
-      bio: "Operations expert with 18+ years managing clinical trial logistics and site relationships across multiple therapeutic areas.",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face"
-    }
-  ];
+  
 
   const values = [
     {
@@ -145,34 +120,7 @@ const Organization = () => {
         </div>
       </div>
 
-      {/* Leadership Team */}
-      <div className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Leadership Team</h2>
-            <p className="text-lg text-gray-600">
-              Experienced professionals dedicated to advancing clinical research
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {team.map((member, index) => (
-              <div key={index} className="text-center">
-                <div className="mb-4">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-32 h-32 rounded-full mx-auto object-cover"
-                  />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{member.name}</h3>
-                <p className="text-blue-600 font-medium mb-3">{member.title}</p>
-                <p className="text-gray-600 text-sm">{member.bio}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      
 
       {/* Company Stats */}
       <div className="py-16 bg-blue-600">

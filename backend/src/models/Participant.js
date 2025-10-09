@@ -6,6 +6,7 @@ const ParticipantSchema = new mongoose.Schema(
     lastName: { type: String, required: true, trim: true },
     email: { type: String, trim: true, lowercase: true },
     phone: { type: String, trim: true },
+    subjectCode: { type: String, index: true, unique: true }, // e.g., AFE-1
     studyId: { type: mongoose.Schema.Types.ObjectId, ref: 'Study', required: true },
     siteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Site', required: true },
     status: { 
@@ -31,5 +32,6 @@ const ParticipantSchema = new mongoose.Schema(
 // Index for efficient queries
 ParticipantSchema.index({ studyId: 1, siteId: 1 });
 ParticipantSchema.index({ status: 1 });
+ParticipantSchema.index({ subjectCode: 1 });
 
 export const Participant = mongoose.model('Participant', ParticipantSchema);

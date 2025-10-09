@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import RoleBasedParticipantView from '../components/RoleBasedParticipantView';
 
@@ -9,12 +10,31 @@ const SiteDashboard = () => {
   const [participants, setParticipants] = useState([]);
   const [studies, setStudies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedParticipant, setSelectedParticipant] = useState(null);
 
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab) setActiveTab(tab);
+  }, [location.search]);
+
+  const changeTab = (tabId) => {
+    setActiveTab(tabId);
+    const params = new URLSearchParams(location.search);
+    if (tabId === 'overview') {
+      params.delete('tab');
+    } else {
+      params.set('tab', tabId);
+    }
+    navigate({ pathname: location.pathname, search: params.toString() });
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -110,7 +130,7 @@ const SiteDashboard = () => {
           {['overview', 'participants', 'workflow'].map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => changeTab(tab)}
               className={`${
                 activeTab === tab
                   ? 'border-blue-500 text-blue-600'

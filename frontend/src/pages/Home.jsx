@@ -129,7 +129,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className={`text-slate-800 ${showRoleModal ? 'pointer-events-none' : ''}`}>
+    <div className={`text-slate-800`}>
       <RoleSelectionModal
         isOpen={showRoleModal}
         onClose={() => setShowRoleModal(false)}

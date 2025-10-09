@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../utils/api';
 import SiteListUpload from '../components/SiteListUpload';
@@ -15,6 +16,8 @@ const AdminDashboard = () => {
   const [studies, setStudies] = useState([]);
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [showUserModal, setShowUserModal] = useState(false);
   const [showSiteModal, setShowSiteModal] = useState(false);
@@ -25,6 +28,24 @@ const AdminDashboard = () => {
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  // Sync tab from URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tab = params.get('tab');
+    if (tab) setActiveTab(tab);
+  }, [location.search]);
+
+  const changeTab = (tabId) => {
+    setActiveTab(tabId);
+    const params = new URLSearchParams(location.search);
+    if (tabId === 'overview') {
+      params.delete('tab');
+    } else {
+      params.set('tab', tabId);
+    }
+    navigate({ pathname: location.pathname, search: params.toString() });
+  };
 
   const loadDashboardData = async () => {
     try {
@@ -213,7 +234,7 @@ const AdminDashboard = () => {
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => changeTab(tab.id)}
                   className={`py-4 px-1 border-b-2 font-medium text-sm ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
