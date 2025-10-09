@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import Logo from '/cg.png';
+const logoSrc = `${import.meta.env.BASE_URL}cg.png`;
 
 function Footer() {
   return (
@@ -10,7 +10,7 @@ function Footer() {
                 <div className="md:col-span-1">
                   <div className="flex items-center space-x-2 mb-4">
                     <img 
-                      src={Logo} 
+                      src={logoSrc} 
                       alt="TRUST Logo" 
                       className="h-12 w-auto object-contain"
                     />
