@@ -97,6 +97,15 @@ const SiteListUpload = ({ onUploadSuccess, onUploadError }) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const downloadTemplate = () => {
+    const link = document.createElement('a');
+    link.href = '/site-template.csv';
+    link.download = 'site-template.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="space-y-6">
       {/* Instructions */}
@@ -113,7 +122,7 @@ const SiteListUpload = ({ onUploadSuccess, onUploadError }) => {
           <li>Address (Street, City, State, ZIP)</li>
         </ul>
         <p className="text-xs text-blue-700 mt-2">
-          Download our <a href="#" className="underline">template file</a> for the correct format.
+          Download our <button onClick={downloadTemplate} className="underline hover:text-blue-900 cursor-pointer">template file</button> for the correct format.
         </p>
       </div>
 
