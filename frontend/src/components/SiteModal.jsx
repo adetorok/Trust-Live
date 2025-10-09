@@ -15,21 +15,26 @@ const SiteModal = ({ isOpen, onClose, onSuccess }) => {
     sponsorId: ''
   });
   const [sponsors, setSponsors] = useState([]);
+  const [studies, setStudies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (isOpen) {
-      loadSponsors();
+      loadSponsorsAndStudies();
     }
   }, [isOpen]);
 
-  const loadSponsors = async () => {
+  const loadSponsorsAndStudies = async () => {
     try {
-      const response = await api.get('/sponsors');
-      setSponsors(response.sponsors || []);
+      const [sponsorsRes, studiesRes] = await Promise.all([
+        api.get('/sponsors'),
+        api.get('/admin/studies')
+      ]);
+      setSponsors(sponsorsRes.sponsors || []);
+      setStudies(studiesRes.studies || []);
     } catch (error) {
-      console.error('Failed to load sponsors:', error);
+      console.error('Failed to load sponsors/studies:', error);
     }
   };
 
@@ -179,12 +184,31 @@ const SiteModal = ({ isOpen, onClose, onSuccess }) => {
               value={formData.sponsorId}
               onChange={(e) => setFormData({...formData, sponsorId: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             >
               <option value="">Select Sponsor</option>
               {sponsors.map(sponsor => (
                 <option key={sponsor._id} value={sponsor._id}>{sponsor.name}</option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Associate Study</label>
+            <select
+              value={formData.studyId || ''}
+              onChange={(e) => setFormData({...formData, studyId: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Study</option>
+              {studies.map(study => (
+                <option key={study._id} value={study._id}>{study.title}</option>
+              ))}
+            </select>
+            {studies.length === 0 && (
+              <div className="text-xs text-gray-500 mt-1">No studies found. Please create a study first from the dashboard.</div>
+            )}
           </div>
 
           {error && (

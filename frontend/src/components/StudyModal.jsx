@@ -58,13 +58,9 @@ const StudyModal = ({ isOpen, onClose, onSuccess }) => {
     }
   };
 
-  const handleSiteToggle = (siteId) => {
-    setFormData(prev => ({
-      ...prev,
-      linkedSites: prev.linkedSites.includes(siteId)
-        ? prev.linkedSites.filter(id => id !== siteId)
-        : [...prev.linkedSites, siteId]
-    }));
+  const handleLinkedSitesChange = (e) => {
+    const selected = Array.from(e.target.selectedOptions).map(o => o.value).filter(v => v);
+    setFormData(prev => ({ ...prev, linkedSites: selected }));
   };
 
   if (!isOpen) return null;
@@ -142,19 +138,21 @@ const StudyModal = ({ isOpen, onClose, onSuccess }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Linked Sites (Optional)</label>
-            <div className="max-h-32 overflow-y-auto border border-gray-300 rounded-md p-2">
-              {sites.map(site => (
-                <label key={site._id} className="flex items-center space-x-2 py-1">
-                  <input
-                    type="checkbox"
-                    checked={formData.linkedSites.includes(site._id)}
-                    onChange={() => handleSiteToggle(site._id)}
-                    className="rounded"
-                  />
-                  <span className="text-sm">{site.name}</span>
-                </label>
-              ))}
-            </div>
+            {sites.length === 0 ? (
+              <div className="text-sm text-gray-500 border border-gray-300 rounded-md p-3">No sites available yet.</div>
+            ) : (
+              <select
+                multiple
+                value={formData.linkedSites}
+                onChange={handleLinkedSitesChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">None</option>
+                {sites.map(site => (
+                  <option key={site._id} value={site._id}>{site.name}</option>
+                ))}
+              </select>
+            )}
           </div>
 
           {error && (
