@@ -4,7 +4,11 @@ import api from '../utils/api';
 const SiteModal = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
-    address: '',
+    addressStreet: '',
+    addressCity: '',
+    addressState: '',
+    addressZip: '',
+    addressCountry: 'US',
     contactName: '',
     contactEmail: '',
     phone: '',
@@ -35,12 +39,31 @@ const SiteModal = ({ isOpen, onClose, onSuccess }) => {
     setError('');
 
     try {
-      await api.post('/admin/sites', formData);
+      const payload = {
+        name: formData.name,
+        address: {
+          street: formData.addressStreet,
+          city: formData.addressCity,
+          state: formData.addressState,
+          zip: formData.addressZip,
+          country: formData.addressCountry || 'US'
+        },
+        contactName: formData.contactName,
+        contactEmail: formData.contactEmail,
+        phone: formData.phone,
+        sponsorId: formData.sponsorId,
+      };
+
+      await api.post('/admin/sites', payload);
       onSuccess();
       onClose();
       setFormData({
         name: '',
-        address: '',
+        addressStreet: '',
+        addressCity: '',
+        addressState: '',
+        addressZip: '',
+        addressCountry: 'US',
         contactName: '',
         contactEmail: '',
         phone: '',
@@ -73,14 +96,48 @@ const SiteModal = ({ isOpen, onClose, onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Address</label>
-            <textarea
-              value={formData.address}
-              onChange={(e) => setFormData({...formData, address: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={3}
-              required
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input
+                type="text"
+                placeholder="Street Address"
+                value={formData.addressStreet}
+                onChange={(e) => setFormData({...formData, addressStreet: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="City"
+                value={formData.addressCity}
+                onChange={(e) => setFormData({...formData, addressCity: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="State/Province"
+                value={formData.addressState}
+                onChange={(e) => setFormData({...formData, addressState: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="ZIP/Postal Code"
+                value={formData.addressZip}
+                onChange={(e) => setFormData({...formData, addressZip: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                type="text"
+                placeholder="Country"
+                value={formData.addressCountry}
+                onChange={(e) => setFormData({...formData, addressCountry: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 sm:col-span-2"
+              />
+            </div>
           </div>
 
           <div>
@@ -123,7 +180,7 @@ const SiteModal = ({ isOpen, onClose, onSuccess }) => {
               onChange={(e) => setFormData({...formData, sponsorId: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select Sponsor (Optional)</option>
+              <option value="">Select Sponsor</option>
               {sponsors.map(sponsor => (
                 <option key={sponsor._id} value={sponsor._id}>{sponsor.name}</option>
               ))}
