@@ -4,15 +4,18 @@ import api from '../utils/api';
 const SiteModal = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     name: '',
-    addressStreet: '',
-    addressCity: '',
-    addressState: '',
-    addressZip: '',
-    addressCountry: 'US',
+    address: {
+      street: '',
+      city: '',
+      state: '',
+      zip: '',
+      country: 'US'
+    },
     contactName: '',
     contactEmail: '',
     phone: '',
-    sponsorId: ''
+    sponsorId: '',
+    studyId: ''
   });
   const [sponsors, setSponsors] = useState([]);
   const [studies, setStudies] = useState([]);
@@ -43,16 +46,23 @@ const SiteModal = ({ isOpen, onClose, onSuccess }) => {
     setLoading(true);
     setError('');
 
+    // Validate required fields
+    if (!formData.sponsorId) {
+      setError('Please select a sponsor');
+      setLoading(false);
+      return;
+    }
+
+    if (!formData.address.street || !formData.address.city || !formData.address.state || !formData.address.zip) {
+      setError('Please fill in all address fields');
+      setLoading(false);
+      return;
+    }
+
     try {
       const payload = {
         name: formData.name,
-        address: {
-          street: formData.addressStreet,
-          city: formData.addressCity,
-          state: formData.addressState,
-          zip: formData.addressZip,
-          country: formData.addressCountry || 'US'
-        },
+        address: formData.address,
         contactName: formData.contactName,
         contactEmail: formData.contactEmail,
         phone: formData.phone,
@@ -64,15 +74,18 @@ const SiteModal = ({ isOpen, onClose, onSuccess }) => {
       onClose();
       setFormData({
         name: '',
-        addressStreet: '',
-        addressCity: '',
-        addressState: '',
-        addressZip: '',
-        addressCountry: 'US',
+        address: {
+          street: '',
+          city: '',
+          state: '',
+          zip: '',
+          country: 'US'
+        },
         contactName: '',
         contactEmail: '',
         phone: '',
-        sponsorId: ''
+        sponsorId: '',
+        studyId: ''
       });
     } catch (error) {
       setError(error.message || 'Failed to create site');
@@ -106,40 +119,40 @@ const SiteModal = ({ isOpen, onClose, onSuccess }) => {
               <input
                 type="text"
                 placeholder="Street Address"
-                value={formData.addressStreet}
-                onChange={(e) => setFormData({...formData, addressStreet: e.target.value})}
+                value={formData.address.street}
+                onChange={(e) => setFormData({...formData, address: {...formData.address, street: e.target.value}})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <input
                 type="text"
                 placeholder="City"
-                value={formData.addressCity}
-                onChange={(e) => setFormData({...formData, addressCity: e.target.value})}
+                value={formData.address.city}
+                onChange={(e) => setFormData({...formData, address: {...formData.address, city: e.target.value}})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <input
                 type="text"
                 placeholder="State/Province"
-                value={formData.addressState}
-                onChange={(e) => setFormData({...formData, addressState: e.target.value})}
+                value={formData.address.state}
+                onChange={(e) => setFormData({...formData, address: {...formData.address, state: e.target.value}})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <input
                 type="text"
                 placeholder="ZIP/Postal Code"
-                value={formData.addressZip}
-                onChange={(e) => setFormData({...formData, addressZip: e.target.value})}
+                value={formData.address.zip}
+                onChange={(e) => setFormData({...formData, address: {...formData.address, zip: e.target.value}})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
               <input
                 type="text"
                 placeholder="Country"
-                value={formData.addressCountry}
-                onChange={(e) => setFormData({...formData, addressCountry: e.target.value})}
+                value={formData.address.country}
+                onChange={(e) => setFormData({...formData, address: {...formData.address, country: e.target.value}})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 sm:col-span-2"
               />
             </div>
