@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import RoleSelectionModal from './RoleSelectionModal';
-const logoSrc = `${import.meta.env.BASE_URL}cg.png`;
+import logoSrc from '/cg.png';
 
 const Navbar = () => {
   const location = useLocation();

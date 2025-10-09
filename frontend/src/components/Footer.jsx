@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-const logoSrc = `${import.meta.env.BASE_URL}cg.png`;
+import logoSrc from '/cg.png';
 
 function Footer() {
   return (
