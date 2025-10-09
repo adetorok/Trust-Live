@@ -49,7 +49,7 @@ const Organization = () => {
   ];
 
   return (
-    <div className={showRoleModal ? 'pointer-events-none' : ''}>
+    <div>
       <Helmet>
         <title>Our Organization - TRUST Clinical Services</title>
         <meta name="description" content="Learn about TRUST Clinical Services' leadership team, company values, and commitment to advancing clinical research through innovative recruitment solutions." />
@@ -168,18 +168,6 @@ const Organization = () => {
               className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
             >
               Request Proposal
-            </button>
-            <button
-              onClick={() => {
-                // Scroll to footer contact section
-                const contactSection = document.querySelector('#contact-section');
-                if (contactSection) {
-                  contactSection.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors"
-            >
-              Contact Our Team
             </button>
           </div>
         </div>

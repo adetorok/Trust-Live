@@ -127,7 +127,7 @@ const OurServices = () => {
   ];
 
   return (
-    <div className={showRoleModal ? 'pointer-events-none' : ''}>
+    <div>
       <Helmet>
         <title>Our Services - TRUST Clinical Services</title>
         <meta name="description" content="Discover TRUST Clinical Services' comprehensive suite of clinical trial recruitment services including nurse-led pre-screening, community outreach, and technology solutions." />
