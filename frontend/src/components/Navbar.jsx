@@ -125,9 +125,9 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-24">
                 <div className="flex-shrink-0 w-[120px] md:w-[160px] overflow-visible relative">
                   <Link 
-                    to="/" 
+                    to={user ? getDashboardBase() : "/"} 
                     className="flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2 rounded-md px-0 py-0"
-                    aria-label="TRUST - Go to homepage"
+                    aria-label={user ? "TRUST - Go to dashboard" : "TRUST - Go to homepage"}
                   >
                     <img 
                       src={Logo}
