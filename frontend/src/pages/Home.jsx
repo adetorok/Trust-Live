@@ -139,7 +139,7 @@ const Home = () => {
       <section id="hero" className="relative bg-gradient-to-br from-teal-50 to-blue-50 py-12 sm:py-16 lg:py-20 overflow-hidden">
         {/* Full hero background icon */}
         <img
-          src={`${import.meta.env.BASE_URL}Trust icon.png`}
+          src={`${import.meta.env.BASE_URL}${encodeURIComponent('Trust icon.png')}`}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-contain opacity-30 pointer-events-none select-none transform origin-center scale-[3.5]"
@@ -319,7 +319,7 @@ const Home = () => {
             <div 
               className="relative h-80 w-full rounded-xl shadow-lg flex items-center justify-center bg-cover bg-center bg-no-repeat"
               style={{
-                backgroundImage: `url('${import.meta.env.BASE_URL}trust (11).png')`,
+                backgroundImage: `url('${import.meta.env.BASE_URL}${encodeURIComponent('trust (11).png')}')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
               }}
