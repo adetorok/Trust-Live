@@ -63,7 +63,7 @@ function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-12 border-t border-slate-700 pt-8 text-center text-slate-400 text-sm">
+        <div className="mt-12 pt-8 text-center text-slate-400 text-sm">
           <p>&copy; 2025 TRUST - Trial Recruitment & Unified Subject Services. All Rights Reserved. <span className="mx-2">|</span> <a href="#" className="hover:text-white">Privacy Policy</a> <span className="mx-2">|</span> <a href="#" className="hover:text-white">Terms of Service</a></p>
         </div>
       </div>
