@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import RoleSelectionModal from './RoleSelectionModal';
-const logoSrc = `${import.meta.env.BASE_URL}cg.png`;
+import Logo from '/cg.png';
 
 const Navbar = () => {
   const location = useLocation();
@@ -130,7 +130,7 @@ const Navbar = () => {
                     aria-label="TRUST - Go to homepage"
                   >
                     <img 
-                      src={logoSrc}
+                      src={Logo}
                       alt="TRUST Logo" 
                       className="h-12 md:h-16 w-auto object-contain"
                     />

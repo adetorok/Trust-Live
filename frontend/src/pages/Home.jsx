@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import TrustIcon from '/Trust icon.png';
+import TrustHero from '/trust (11).png';
 import RoleSelectionModal from '../components/RoleSelectionModal';
 import EnhancedProposalForm from '../components/EnhancedProposalForm';
 
@@ -139,7 +141,7 @@ const Home = () => {
       <section id="hero" className="relative bg-gradient-to-br from-teal-50 to-blue-50 py-12 sm:py-16 lg:py-20 overflow-hidden">
         {/* Full hero background icon */}
         <img
-          src={`${import.meta.env.BASE_URL}${encodeURIComponent('Trust icon.png')}`}
+          src={TrustIcon}
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-contain opacity-30 pointer-events-none select-none transform origin-center scale-[3.5]"
@@ -319,7 +321,7 @@ const Home = () => {
             <div 
               className="relative h-80 w-full rounded-xl shadow-lg flex items-center justify-center bg-cover bg-center bg-no-repeat"
               style={{
-                backgroundImage: `url('${import.meta.env.BASE_URL}${encodeURIComponent('trust (11).png')}')`,
+                backgroundImage: `url('${TrustHero}')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'
               }}
