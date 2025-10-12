@@ -151,7 +151,7 @@ const Home = () => {
             {/* Left side - Main content */}
             <div className="text-center">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight mb-6">
-                Recruit Qualified Subjects—Fast & Predictable
+                Full Service CRO + Patient Recruitment & Retention
               </h1>
               <div className="mt-6 mx-auto max-w-2xl">
                 <div className="rounded-2xl bg-white/80 backdrop-blur border border-white/70 shadow-sm p-6 text-left">
@@ -160,19 +160,19 @@ const Home = () => {
                       <svg className="h-5 w-5 text-[#16B1F0] mt-1 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4A1 1 0 015.707 9.293L8 11.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span>TRUST builds a steady pipeline of pre-qualified subjects so your study meets enrollment targets.</span>
+                      <span>End-to-end clinical trial execution with a dedicated CRO team plus a proven recruitment engine to meet enrollment targets.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <svg className="h-5 w-5 text-[#16B1F0] mt-1 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4A1 1 0 015.707 9.293L8 11.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span>Our method blends targeted community outreach with nurse-led pre-screening to cut screen-fail rates and keep coordinators focused on visits.</span>
+                      <span>CRO services: protocol design, regulatory, monitoring, data management, safety/pharmacovigilance, biostatistics, medical writing, and program management.</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <svg className="h-5 w-5 text-[#16B1F0] mt-1 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4A1 1 0 015.707 9.293L8 11.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
-                      <span>IRB-ready bilingual materials included.</span>
+                      <span>Recruitment & retention: bilingual IRB-ready materials, community outreach, nurse-led pre-screening, and participant support.</span>
                     </li>
                   </ul>
                 </div>
@@ -225,9 +225,21 @@ const Home = () => {
           </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+            <a
+              href="/cro"
+              className="bg-[#10224E] text-[#E8EEFC] font-bold px-8 py-3 rounded-lg hover:bg-[#0B1220] transition-colors shadow-lg text-lg text-center"
+            >
+              Explore Full Service CRO
+            </a>
+            <a
+              href="/recruitment"
+              className="bg-[#16B1F0] text-white font-bold px-8 py-3 rounded-lg hover:bg-[#10224E] transition-colors shadow-lg text-lg text-center"
+            >
+              Patient Recruitment & Retention
+            </a>
             <button
               onClick={handleRequestProposalClick}
-              className="bg-[#16B1F0] text-white font-bold px-8 py-3 rounded-lg hover:bg-[#10224E] transition-colors shadow-lg text-lg text-center"
+              className="bg-white text-[#10224E] font-bold px-8 py-3 rounded-lg border-2 border-[#10224E] hover:bg-[#56F0C8] hover:text-[#0B1220] transition-colors shadow text-lg text-center"
             >
               Request Proposal
             </button>

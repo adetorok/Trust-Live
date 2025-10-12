@@ -4,7 +4,8 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/Trust-Live/', // For GitHub Pages deployment
+  // Allow overriding base via env for different hosts (e.g., Hostinger vs GitHub Pages)
+  base: process.env.VITE_BASE || '/Trust-Live/',
   server: {
     port: 5173,
     proxy: {
