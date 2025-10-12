@@ -10,6 +10,8 @@ import SponsorDashboard from './pages/SponsorDashboard';
 import SiteDashboard from './pages/SiteDashboard';
 import FAQ from './pages/FAQ';
 import Organization from './pages/Organization';
+import Career from './pages/Career';
+import JobSearch from './pages/JobSearch';
 import OurServices from './pages/OurServices';
 import SponsorLanding from './pages/SponsorLanding';
 import SiteLanding from './pages/SiteLanding';
@@ -26,6 +28,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/organization" element={<Organization />} />
+            <Route path="/career" element={<Career />} />
+            <Route path="/jobs" element={<JobSearch />} />
             <Route path="/services" element={<OurServices />} />
             <Route path="/sponsor" element={<SponsorLanding />} />
             <Route path="/site" element={<SiteLanding />} />

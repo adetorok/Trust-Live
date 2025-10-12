@@ -180,15 +180,42 @@ const Navbar = () => {
                     Home
                   </Link>
                   
-                  <Link 
-                    to="/organization" 
-                    onClick={() => handleNavClick('/organization')}
-                    className={`${getButtonStyles('/organization')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
-                    role="menuitem"
-                    aria-label="Go to Organization page"
-                  >
-                    Organization
-                  </Link>
+                  <div className="relative group">
+                    <button
+                      className={`${getButtonStyles('/organization')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2 flex items-center`}
+                      aria-label="About Us"
+                    >
+                      About Us
+                      <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                      <div className="py-1">
+                        <Link
+                          to="/organization"
+                          onClick={() => handleNavClick('/organization')}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Organization
+                        </Link>
+                        <Link
+                          to="/career"
+                          onClick={() => handleNavClick('/career')}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Career
+                        </Link>
+                        <Link
+                          to="/jobs"
+                          onClick={() => handleNavClick('/jobs')}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Search Jobs
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
                   <Link 
                     to="/faq" 
                     onClick={() => handleNavClick('/faq')}
@@ -338,18 +365,47 @@ const Navbar = () => {
                   Home
                 </Link>
                 
-                <Link 
-                  to="/organization" 
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/organization') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleNavClick('/organization');
-                  }}
-                  role="menuitem"
-                  aria-label="Go to Organization page"
-                >
-                  Organization
-                </Link>
+                <div className="space-y-1">
+                  <div className="px-3 py-2 text-base font-medium text-slate-600">
+                    About Us
+                  </div>
+                  <Link 
+                    to="/organization" 
+                    className={`block px-6 py-2 rounded-md text-base font-medium ${isActive('/organization') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleNavClick('/organization');
+                    }}
+                    role="menuitem"
+                    aria-label="Go to Organization page"
+                  >
+                    Organization
+                  </Link>
+                  <Link 
+                    to="/career" 
+                    className={`block px-6 py-2 rounded-md text-base font-medium ${isActive('/career') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleNavClick('/career');
+                    }}
+                    role="menuitem"
+                    aria-label="Go to Career page"
+                  >
+                    Career
+                  </Link>
+                  <Link 
+                    to="/jobs" 
+                    className={`block px-6 py-2 rounded-md text-base font-medium ${isActive('/jobs') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleNavClick('/jobs');
+                    }}
+                    role="menuitem"
+                    aria-label="Go to Search Jobs page"
+                  >
+                    Search Jobs
+                  </Link>
+                </div>
                 <Link 
                   to="/faq" 
                   className={`block px-3 py-2 rounded-md text-base font-medium ${isActive('/faq') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
