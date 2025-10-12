@@ -143,7 +143,7 @@ const Navbar = () => {
                 <>
                   <div className="relative group">
                     <button
-                      className={`${getButtonStyles('/sponsor')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2 flex items-center`}
+                      className={`${getButtonStyles('/cro')} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2 flex items-center`}
                       aria-label="Our Services"
                     >
                       Our Services
@@ -151,21 +151,37 @@ const Navbar = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </button>
-                    <div className="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                       <div className="py-1">
+                        <Link
+                          to="/cro"
+                          onClick={() => handleNavClick('/cro')}
+                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-semibold"
+                        >
+                          Full Service CRO
+                        </Link>
+                        <div className="border-t border-gray-100 my-1"></div>
+                        <div className="px-4 py-2 text-xs text-gray-500 font-medium">Subject Recruitment & Retention</div>
+                        <Link
+                          to="/recruitment"
+                          onClick={() => handleNavClick('/recruitment')}
+                          className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        >
+                          Overview
+                        </Link>
                         <Link
                           to="/sponsor"
                           onClick={() => handleNavClick('/sponsor')}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
-                          Sponsor & CRO
+                          For Sponsors & CROs
                         </Link>
                         <Link
                           to="/site"
                           onClick={() => handleNavClick('/site')}
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
-                          Site & Vendor
+                          For Sites & Vendors
                         </Link>
                       </div>
                     </div>
@@ -404,6 +420,61 @@ const Navbar = () => {
                     aria-label="Go to Search Jobs page"
                   >
                     Search Jobs
+                  </Link>
+                </div>
+                
+                <div className="space-y-1">
+                  <div className="px-3 py-2 text-base font-medium text-slate-600">
+                    Our Services
+                  </div>
+                  <Link 
+                    to="/cro" 
+                    className={`block px-6 py-2 rounded-md text-base font-medium ${isActive('/cro') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleNavClick('/cro');
+                    }}
+                    role="menuitem"
+                    aria-label="Go to CRO page"
+                  >
+                    Full Service CRO
+                  </Link>
+                  <div className="px-6 py-1 text-xs text-gray-500 font-medium">Subject Recruitment & Retention</div>
+                  <Link 
+                    to="/recruitment" 
+                    className={`block px-8 py-2 rounded-md text-base font-medium ${isActive('/recruitment') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleNavClick('/recruitment');
+                    }}
+                    role="menuitem"
+                    aria-label="Go to Subject Recruitment page"
+                  >
+                    Overview
+                  </Link>
+                  <Link 
+                    to="/sponsor" 
+                    className={`block px-8 py-2 rounded-md text-base font-medium ${isActive('/sponsor') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleNavClick('/sponsor');
+                    }}
+                    role="menuitem"
+                    aria-label="Go to Sponsor page"
+                  >
+                    For Sponsors & CROs
+                  </Link>
+                  <Link 
+                    to="/site" 
+                    className={`block px-8 py-2 rounded-md text-base font-medium ${isActive('/site') ? 'bg-[#56F0C8] text-[#0B1220]' : 'text-slate-600 hover:text-slate-900'} focus:outline-none focus:ring-2 focus:ring-[#56F0C8] focus:ring-offset-2`}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      handleNavClick('/site');
+                    }}
+                    role="menuitem"
+                    aria-label="Go to Site page"
+                  >
+                    For Sites & Vendors
                   </Link>
                 </div>
                 <Link 

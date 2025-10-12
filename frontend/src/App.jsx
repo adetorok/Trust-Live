@@ -12,6 +12,8 @@ import FAQ from './pages/FAQ';
 import Organization from './pages/Organization';
 import Career from './pages/Career';
 import JobSearch from './pages/JobSearch';
+import CRO from './pages/CRO';
+import SubjectRecruitment from './pages/SubjectRecruitment';
 import OurServices from './pages/OurServices';
 import SponsorLanding from './pages/SponsorLanding';
 import SiteLanding from './pages/SiteLanding';
@@ -30,6 +32,8 @@ function App() {
             <Route path="/organization" element={<Organization />} />
             <Route path="/career" element={<Career />} />
             <Route path="/jobs" element={<JobSearch />} />
+            <Route path="/cro" element={<CRO />} />
+            <Route path="/recruitment" element={<SubjectRecruitment />} />
             <Route path="/services" element={<OurServices />} />
             <Route path="/sponsor" element={<SponsorLanding />} />
             <Route path="/site" element={<SiteLanding />} />
