@@ -8,377 +8,360 @@ datasource db {
 }
 
 enum UserRole {
-  ADMIN
-  DIRECTOR
-  COORDINATOR
-  REGULATORY
-  PRINCIPAL_INVESTIGATOR
-  CONTRIBUTOR
-  AUDITOR
+  ADMIN                  @map("admin")
+  DIRECTOR               @map("director")
+  COORDINATOR            @map("coordinator")
+  REGULATORY             @map("regulatory")
+  PRINCIPAL_INVESTIGATOR @map("principal_investigator")
+  CONTRIBUTOR            @map("contributor")
+  AUDITOR                @map("auditor")
+
+  @@map("user_role")
 }
 
 enum StudyStatus {
-  SETUP
-  ACTIVE
-  PAUSED
-  CLOSEOUT
-  CLOSED
+  SETUP    @map("setup")
+  ACTIVE   @map("active")
+  PAUSED   @map("paused")
+  CLOSEOUT @map("closeout")
+  CLOSED   @map("closed")
+
+  @@map("study_status")
 }
 
-enum SourceType {
-  EXTERNAL_PERSON
-  AUTOMATED_SYSTEM
-  INTERNAL_PERSON
-  MILESTONE
-  MANUAL
+enum TaskCategory {
+  DATA_QUERY @map("data_query")
+  REGULATORY @map("regulatory")
+  SUPPLY     @map("supply")
+  MONITORING @map("monitoring")
+  SAFETY     @map("safety")
+  GENERAL    @map("general")
+
+  @@map("task_category")
 }
 
-enum OperationalCategory {
-  DATA_MANAGEMENT
-  REGULATORY_IRB
-  IRT_DRUG_SUPPLY
-  CENTRAL_LAB
-  SAFETY
-  MONITORING
-  STUDY_STARTUP
-  TRAINING
-  PROTOCOL_AMENDMENT
-  RECRUITMENT
-  PARTICIPANT_VISIT_OPERATIONS
-  VENDOR_SUPPORT
-  FINANCE
-  DOCUMENT_REQUEST
-  GENERAL_STUDY_COMMUNICATION
+enum TaskStatus {
+  TRIAGE                        @map("triage")
+  ASSIGNED                      @map("assigned")
+  IN_PROGRESS                   @map("in_progress")
+  WAITING_EXTERNAL              @map("waiting_external")
+  WAITING_INTERNAL              @map("waiting_internal")
+  PENDING_REVIEW                @map("pending_review")
+  PENDING_SENSITIVE_DATA_REVIEW @map("pending_sensitive_data_review")
+  COMPLETED                     @map("completed")
+  CLOSED_NO_ACTION              @map("closed_no_action")
+  CANCELLED                     @map("cancelled")
+
+  @@map("task_status")
 }
 
-enum WorkItemStatus {
-  NEW
-  PENDING_SENSITIVE_DATA_REVIEW
-  UNASSIGNED
-  ASSIGNED
-  IN_PROGRESS
-  WAITING_EXTERNAL
-  WAITING_INTERNAL
-  PENDING_REVIEW
-  COMPLETED
-  CANCELLED
+enum SourceKind {
+  EXTERNAL_HUMAN   @map("external_human")
+  AUTOMATED_SYSTEM @map("automated_system")
+  INTERNAL         @map("internal")
+  MILESTONE        @map("milestone")
+  MANUAL           @map("manual")
+
+  @@map("source_kind")
 }
 
-enum MessageDirection {
-  INBOUND
-  OUTBOUND
-  INTERNAL
+enum EventDirection {
+  INBOUND  @map("inbound")
+  OUTBOUND @map("outbound")
+  INTERNAL @map("internal")
+
+  @@map("event_direction")
 }
 
-enum MessageKind {
-  NEW_REQUEST
-  REMINDER
-  STATUS_UPDATE
-  COMPLETION_CONFIRMATION
-  INFORMATIONAL
-  AUTO_REPLY
-}
+enum MailboxStatus {
+  DISCONNECTED @map("disconnected")
+  ACTIVE       @map("active")
+  ERROR        @map("error")
+  PAUSED       @map("paused")
 
-enum SensitiveDataStatus {
-  NOT_SCANNED
-  CLEAR
-  REVIEW_REQUIRED
-  REDACTED
-}
-
-enum AssignmentRole {
-  ACCOUNTABLE_OWNER
-  CURRENT_ASSIGNEE
-  CONTRIBUTOR
-  APPROVER
-}
-
-enum SlaClockType {
-  FIRST_RESPONSE
-  RESOLUTION
-  INTERNAL_CONTRIBUTOR
-}
-
-enum SlaClockStatus {
-  RUNNING
-  PAUSED
-  MET
-  BREACHED
-  CANCELLED
+  @@map("mailbox_status")
 }
 
 model Tenant {
-  id                   String               @id @default(cuid())
+  id                   String         @id @default(uuid()) @db.Uuid
   name                 String
-  workspaceDomain      String               @unique
-  timeZone             String               @default("America/New_York")
-  businessDayStartHour Int                  @default(9)
-  businessDayEndHour   Int                  @default(17)
+  workspaceDomain      String?        @unique @map("workspace_domain")
+  timeZone             String         @default("America/New_York") @map("time_zone")
+  businessDayStartHour Int            @default(9) @map("business_day_start_hour")
+  businessDayEndHour   Int            @default(17) @map("business_day_end_hour")
   workdays             Json
-  createdAt            DateTime             @default(now())
-  updatedAt            DateTime             @updatedAt
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @updatedAt @map("updated_at")
   users                User[]
   studies              Study[]
-  sourceOrganizations  SourceOrganization[]
-  senderRules          SenderRule[]
-  messageThreads       MessageThread[]
-  workItems            WorkItem[]
+  mailboxes            Mailbox[]
+  sourceSystems        SourceSystem[]
   slaPolicies          SlaPolicy[]
-  auditEvents          AuditEvent[]
+  tasks                Task[]
+  sourceEvents         SourceEvent[]
+  auditLogs            AuditLog[]
+
+  @@map("tenants")
 }
 
 model User {
-  id                         String            @id @default(cuid())
-  tenantId                   String
-  email                      String
-  fullName                   String
-  role                       UserRole
-  googleSubject              String?
-  isActive                   Boolean           @default(true)
-  createdAt                  DateTime          @default(now())
-  updatedAt                  DateTime          @updatedAt
-  tenant                     Tenant            @relation(fields: [tenantId], references: [id])
-  accountableWorkItems       WorkItem[]        @relation("AccountableOwner")
-  assignedWorkItems          WorkItem[]        @relation("CurrentAssignee")
-  approvalWorkItems          WorkItem[]        @relation("Approver")
-  defaultSenderRules         SenderRule[]       @relation("DefaultRuleOwner")
-  assignmentEventsReceived   AssignmentEvent[] @relation("AssignedUser")
-  assignmentEventsPerformed  AssignmentEvent[] @relation("AssignmentActor")
-  escalationPolicies         SlaPolicy[]        @relation("EscalationUser")
-  reviewedSensitiveData      SensitiveDataReview[]
-  auditEvents                AuditEvent[]
+  id                       String               @id @default(uuid()) @db.Uuid
+  tenantId                 String               @map("tenant_id") @db.Uuid
+  email                    String
+  fullName                 String               @map("full_name")
+  role                     UserRole
+  googleSubject            String?              @map("google_subject")
+  isActive                 Boolean              @default(true) @map("is_active")
+  createdAt                DateTime             @default(now()) @map("created_at")
+  updatedAt                DateTime             @updatedAt @map("updated_at")
+  tenant                   Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  defaultStudies           Study[]              @relation("StudyDefaultOwner")
+  defaultSourceSystems     SourceSystem[]       @relation("SourceSystemDefaultOwner")
+  ownedTasks               Task[]               @relation("TaskOwner")
+  escalatedTasks           Task[]               @relation("TaskEscalationUser")
+  delegationsFrom          Delegation[]         @relation("DelegationFromOwner")
+  delegationsTo            Delegation[]         @relation("DelegationToOwner")
+  delegationsPerformed     Delegation[]         @relation("DelegationActor")
+  contributorRequestsMade  ContributorRequest[] @relation("ContributorRequestedBy")
+  contributorRequestsOwed  ContributorRequest[] @relation("ContributorRequestedOf")
+  auditLogs                AuditLog[]
 
   @@unique([tenantId, email])
   @@index([tenantId, role])
+  @@map("users")
 }
 
 model Study {
-  id              String              @id @default(cuid())
-  tenantId        String
-  protocolNumber  String
-  title           String
-  sponsorName     String?
-  croName         String?
-  status          StudyStatus         @default(SETUP)
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-  tenant          Tenant              @relation(fields: [tenantId], references: [id])
-  senderRules     SenderRule[]
-  messageThreads  MessageThread[]
-  workItems       WorkItem[]
-  slaPolicies     SlaPolicy[]
+  id             String        @id @default(uuid()) @db.Uuid
+  tenantId       String        @map("tenant_id") @db.Uuid
+  defaultOwnerId String?       @map("default_owner_id") @db.Uuid
+  protocolNumber String        @map("protocol_number")
+  title          String
+  sponsorName    String?       @map("sponsor_name")
+  croName        String?       @map("cro_name")
+  status         StudyStatus   @default(SETUP)
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  defaultOwner   User?         @relation("StudyDefaultOwner", fields: [defaultOwnerId], references: [id], onDelete: SetNull)
+  sourceSystems  SourceSystem[]
+  slaPolicies    SlaPolicy[]
+  tasks          Task[]
 
   @@unique([tenantId, protocolNumber])
   @@index([tenantId, status])
+  @@map("studies")
 }
 
-model SourceOrganization {
-  id               String       @id @default(cuid())
-  tenantId         String
-  name             String
-  organizationType String
-  primaryDomain    String?
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  tenant           Tenant       @relation(fields: [tenantId], references: [id])
-  senderRules      SenderRule[]
+model Mailbox {
+  id                     String        @id @default(uuid()) @db.Uuid
+  tenantId               String        @map("tenant_id") @db.Uuid
+  email                  String
+  provider               String        @default("google")
+  status                 MailboxStatus @default(DISCONNECTED)
+  pollIntervalSeconds    Int           @default(60) @map("poll_interval_seconds")
+  overlapSeconds         Int           @default(300) @map("overlap_seconds")
+  tokenSecretName        String?       @map("token_secret_name")
+  lastSuccessfulPollAt   DateTime?     @map("last_successful_poll_at")
+  lastErrorAt            DateTime?     @map("last_error_at")
+  lastError              String?       @map("last_error")
+  createdAt              DateTime      @default(now()) @map("created_at")
+  updatedAt              DateTime      @updatedAt @map("updated_at")
+  tenant                 Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
-  @@unique([tenantId, name])
-  @@index([tenantId, primaryDomain])
-}
-
-model SenderRule {
-  id                   String                @id @default(cuid())
-  tenantId             String
-  studyId              String?
-  sourceOrganizationId String?
-  defaultOwnerId       String?
-  senderEmail          String?
-  senderDomain         String?
-  subjectPattern       String?
-  sourceType           SourceType
-  category             OperationalCategory?
-  actionRequired       Boolean               @default(true)
-  defaultPriority      Int                   @default(3)
-  deduplicationConfig  Json?
-  isActive             Boolean               @default(true)
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  tenant               Tenant                @relation(fields: [tenantId], references: [id])
-  study                Study?                @relation(fields: [studyId], references: [id])
-  sourceOrganization   SourceOrganization?   @relation(fields: [sourceOrganizationId], references: [id])
-  defaultOwner         User?                 @relation("DefaultRuleOwner", fields: [defaultOwnerId], references: [id])
-
-  @@index([tenantId, senderDomain])
-  @@index([tenantId, senderEmail])
-  @@index([studyId, isActive])
-}
-
-model MessageThread {
-  id               String         @id @default(cuid())
-  tenantId         String
-  studyId          String?
-  gmailThreadId    String
-  sanitizedSubject String?
-  latestMessageAt  DateTime
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
-  tenant           Tenant         @relation(fields: [tenantId], references: [id])
-  study            Study?         @relation(fields: [studyId], references: [id])
-  messages         MessageEvent[]
-  workItem         WorkItem?
-
-  @@unique([tenantId, gmailThreadId])
-  @@index([tenantId, latestMessageAt])
-}
-
-model MessageEvent {
-  id                      String                  @id @default(cuid())
-  threadId                String
-  gmailMessageId          String                  @unique
-  direction               MessageDirection
-  sourceType              SourceType
-  messageKind             MessageKind
-  senderDomain            String?
-  sanitizedFrom           String?
-  sanitizedSubject        String?
-  sanitizedSummary        String?
-  externalReference       String?
-  sensitiveDataStatus     SensitiveDataStatus     @default(NOT_SCANNED)
-  rawEmailContentStored   Boolean                 @default(false)
-  receivedAt              DateTime
-  createdAt               DateTime                @default(now())
-  thread                  MessageThread           @relation(fields: [threadId], references: [id])
-  sensitiveDataReview     SensitiveDataReview?
-
-  @@index([threadId, receivedAt])
-  @@index([senderDomain, receivedAt])
-  @@index([externalReference])
-}
-
-model WorkItem {
-  id                   String                @id @default(cuid())
-  tenantId             String
-  studyId              String?
-  threadId             String?               @unique
-  parentWorkItemId     String?
-  slaPolicyId          String?
-  accountableOwnerId  String?
-  currentAssigneeId    String?
-  approverId           String?
-  sourceType           SourceType
-  category             OperationalCategory
-  title                String
-  sanitizedSummary     String?
-  status               WorkItemStatus        @default(NEW)
-  priority             Int                   @default(3)
-  externalReference    String?
-  firstResponseAt      DateTime?
-  resolvedAt           DateTime?
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  tenant               Tenant                @relation(fields: [tenantId], references: [id])
-  study                Study?                @relation(fields: [studyId], references: [id])
-  thread               MessageThread?        @relation(fields: [threadId], references: [id])
-  parentWorkItem       WorkItem?              @relation("WorkItemHierarchy", fields: [parentWorkItemId], references: [id])
-  childWorkItems       WorkItem[]             @relation("WorkItemHierarchy")
-  slaPolicy            SlaPolicy?            @relation(fields: [slaPolicyId], references: [id])
-  accountableOwner     User?                 @relation("AccountableOwner", fields: [accountableOwnerId], references: [id])
-  currentAssignee      User?                 @relation("CurrentAssignee", fields: [currentAssigneeId], references: [id])
-  approver             User?                 @relation("Approver", fields: [approverId], references: [id])
-  assignmentEvents     AssignmentEvent[]
-  slaClocks            SlaClock[]
-
-  @@index([tenantId, status, createdAt])
-  @@index([studyId, status])
-  @@index([currentAssigneeId, status])
-  @@index([externalReference])
-}
-
-model AssignmentEvent {
-  id             String         @id @default(cuid())
-  workItemId     String
-  assignedUserId String
-  actorId        String
-  assignmentRole AssignmentRole
-  action         String
-  reason         String?
-  occurredAt     DateTime       @default(now())
-  workItem       WorkItem       @relation(fields: [workItemId], references: [id])
-  assignedUser   User           @relation("AssignedUser", fields: [assignedUserId], references: [id])
-  actor          User           @relation("AssignmentActor", fields: [actorId], references: [id])
-
-  @@index([workItemId, occurredAt])
-  @@index([assignedUserId, occurredAt])
+  @@unique([tenantId, email])
+  @@index([status, lastSuccessfulPollAt])
+  @@map("mailboxes")
 }
 
 model SlaPolicy {
-  id                   String                @id @default(cuid())
-  tenantId             String
-  studyId              String?
-  escalationUserId     String?
-  name                 String
-  category             OperationalCategory?
-  firstResponseMinutes Int
-  resolutionMinutes    Int
-  pauseStatuses        Json
-  isActive             Boolean               @default(true)
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  tenant               Tenant                @relation(fields: [tenantId], references: [id])
-  study                Study?                @relation(fields: [studyId], references: [id])
-  escalationUser       User?                 @relation("EscalationUser", fields: [escalationUserId], references: [id])
-  workItems            WorkItem[]
+  id                         String         @id @default(uuid()) @db.Uuid
+  tenantId                   String         @map("tenant_id") @db.Uuid
+  studyId                    String?        @map("study_id") @db.Uuid
+  name                       String
+  category                   TaskCategory?
+  firstReplyTargetMinutes    Int            @map("first_reply_target_minutes")
+  resolutionTargetMinutes    Int            @map("resolution_target_minutes")
+  pauseStatuses              Json           @map("pause_statuses")
+  isActive                   Boolean        @default(true) @map("is_active")
+  createdAt                  DateTime       @default(now()) @map("created_at")
+  updatedAt                  DateTime       @updatedAt @map("updated_at")
+  tenant                     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  study                      Study?         @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  sourceSystems              SourceSystem[]
+  tasks                      Task[]
 
   @@index([tenantId, studyId, category, isActive])
+  @@map("sla_policies")
 }
 
-model SlaClock {
-  id                 String         @id @default(cuid())
-  workItemId         String
-  clockType          SlaClockType
-  status             SlaClockStatus @default(RUNNING)
-  startedAt          DateTime
-  dueAt              DateTime
-  metAt              DateTime?
-  pausedAt           DateTime?
-  totalPausedMinutes Int            @default(0)
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-  workItem           WorkItem       @relation(fields: [workItemId], references: [id])
+model SourceSystem {
+  id                       String        @id @default(uuid()) @db.Uuid
+  tenantId                 String        @map("tenant_id") @db.Uuid
+  studyId                  String?       @map("study_id") @db.Uuid
+  defaultOwnerId           String?       @map("default_owner_id") @db.Uuid
+  slaPolicyId              String?       @map("sla_policy_id") @db.Uuid
+  name                     String
+  senderPattern            String        @map("sender_pattern")
+  subjectPattern           String?       @map("subject_pattern")
+  category                 TaskCategory
+  actionRequired           Boolean       @default(true) @map("action_required")
+  externalRefRegex         String?       @map("external_ref_regex")
+  protocolRegex            String?       @map("protocol_regex")
+  reminderRegex            String        @default("^(?:\\[[^\\]]+\\]\\s*)?(?:re-?minder|reminder:|\\[reminder\\])") @map("reminder_regex")
+  dedupWindowHours         Int           @default(168) @map("dedup_window_hours")
+  escalateAfterReminders   Int?          @default(2) @map("escalate_after_reminders")
+  active                   Boolean       @default(true)
+  createdAt                DateTime      @default(now()) @map("created_at")
+  updatedAt                DateTime      @updatedAt @map("updated_at")
+  tenant                   Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  study                    Study?        @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  defaultOwner             User?         @relation("SourceSystemDefaultOwner", fields: [defaultOwnerId], references: [id], onDelete: SetNull)
+  slaPolicy                SlaPolicy?    @relation(fields: [slaPolicyId], references: [id], onDelete: SetNull)
+  tasks                    Task[]
+  sourceEvents             SourceEvent[]
 
-  @@unique([workItemId, clockType])
-  @@index([status, dueAt])
+  @@index([tenantId, senderPattern, active])
+  @@index([studyId, category, active])
+  @@map("source_systems")
 }
 
-model SensitiveDataReview {
-  id            String              @id @default(cuid())
-  messageEventId String             @unique
-  reviewerId    String?
-  status        SensitiveDataStatus
-  detectedTypes Json?
-  reviewerNotes String?
-  createdAt     DateTime            @default(now())
-  resolvedAt    DateTime?
-  messageEvent  MessageEvent        @relation(fields: [messageEventId], references: [id])
-  reviewer      User?               @relation(fields: [reviewerId], references: [id])
+model Task {
+  id                         String               @id @default(uuid()) @db.Uuid
+  tenantId                   String               @map("tenant_id") @db.Uuid
+  studyId                    String?              @map("study_id") @db.Uuid
+  sourceSystemId             String?              @map("source_system_id") @db.Uuid
+  ownerId                    String?              @map("owner_id") @db.Uuid
+  slaPolicyId                String?              @map("sla_policy_id") @db.Uuid
+  escalatedToId              String?              @map("escalated_to_id") @db.Uuid
+  category                   TaskCategory         @default(GENERAL)
+  status                     TaskStatus           @default(TRIAGE)
+  title                      String
+  sanitizedSummary           String?              @map("sanitized_summary")
+  restrictedReference        String?              @map("restricted_reference")
+  externalRef                String?              @map("external_ref")
+  dedupKey                   String?              @map("dedup_key")
+  priority                   Int                  @default(3)
+  reminderCount              Int                  @default(0) @map("reminder_count")
+  lastReminderAt             DateTime?            @map("last_reminder_at")
+  escalatedAt                DateTime?            @map("escalated_at")
+  receivedAt                 DateTime             @map("received_at")
+  clockStartedAt             DateTime             @map("clock_started_at")
+  firstReplyDueAt            DateTime?            @map("first_reply_due_at")
+  resolutionDueAt            DateTime?            @map("resolution_due_at")
+  firstReplyAt               DateTime?            @map("first_reply_at")
+  resolvedAt                 DateTime?            @map("resolved_at")
+  pausedAt                   DateTime?            @map("paused_at")
+  totalPausedMinutes         Int                  @default(0) @map("total_paused_minutes")
+  breachedAt                 DateTime?            @map("breached_at")
+  createdAt                  DateTime             @default(now()) @map("created_at")
+  updatedAt                  DateTime             @updatedAt @map("updated_at")
+  tenant                     Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  study                      Study?               @relation(fields: [studyId], references: [id], onDelete: SetNull)
+  sourceSystem               SourceSystem?        @relation(fields: [sourceSystemId], references: [id], onDelete: SetNull)
+  owner                      User?                @relation("TaskOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  slaPolicy                  SlaPolicy?           @relation(fields: [slaPolicyId], references: [id], onDelete: SetNull)
+  escalatedTo                User?                @relation("TaskEscalationUser", fields: [escalatedToId], references: [id], onDelete: SetNull)
+  sourceEvents               SourceEvent[]
+  delegations                Delegation[]
+  contributorRequests        ContributorRequest[]
+
+  @@index([tenantId, status, receivedAt])
+  @@index([studyId, status])
+  @@index([ownerId, status])
+  @@index([sourceSystemId, externalRef])
+  @@index([dedupKey])
+  @@map("tasks")
 }
 
-model AuditEvent {
-  id                   String   @id @default(cuid())
-  tenantId             String
-  actorId              String?
-  entityType           String
-  entityId             String
-  eventType            String
-  previousState        Json?
-  newState             Json?
-  sourceMessageHash    String?
-  applicationVersion   String?
-  occurredAt           DateTime @default(now())
-  tenant               Tenant   @relation(fields: [tenantId], references: [id])
-  actor                User?    @relation(fields: [actorId], references: [id])
+model SourceEvent {
+  id                    String         @id @default(uuid()) @db.Uuid
+  tenantId              String         @map("tenant_id") @db.Uuid
+  taskId                String         @map("task_id") @db.Uuid
+  sourceSystemId        String?        @map("source_system_id") @db.Uuid
+  kind                  SourceKind
+  direction             EventDirection
+  gmailMessageId        String?        @map("gmail_message_id")
+  gmailThreadId         String?        @map("gmail_thread_id")
+  rfcMessageId          String?        @map("rfc_message_id")
+  fromAddress           String?        @map("from_address")
+  sanitizedSubject      String?        @map("sanitized_subject")
+  sanitizedBody         String?        @map("sanitized_body")
+  externalRef           String?        @map("external_ref")
+  notificationType      String?        @map("notification_type")
+  isReminder            Boolean        @default(false) @map("is_reminder")
+  createdTask           Boolean        @default(false) @map("created_task")
+  privacyReviewRequired Boolean        @default(false) @map("privacy_review_required")
+  privacyFlags          Json?          @map("privacy_flags")
+  payloadHash           String?        @map("payload_hash")
+  receivedAt            DateTime       @map("received_at")
+  createdAt             DateTime       @default(now()) @map("created_at")
+  tenant                Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  task                  Task           @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  sourceSystem          SourceSystem?  @relation(fields: [sourceSystemId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, gmailMessageId])
+  @@index([gmailThreadId, receivedAt])
+  @@index([taskId, receivedAt])
+  @@index([sourceSystemId, externalRef])
+  @@map("source_events")
+}
+
+model Delegation {
+  id             String   @id @default(uuid()) @db.Uuid
+  taskId         String   @map("task_id") @db.Uuid
+  fromOwnerId    String?  @map("from_owner_id") @db.Uuid
+  toOwnerId      String   @map("to_owner_id") @db.Uuid
+  actorId        String   @map("actor_id") @db.Uuid
+  reason         String?
+  occurredAt     DateTime @default(now()) @map("occurred_at")
+  task           Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fromOwner      User?    @relation("DelegationFromOwner", fields: [fromOwnerId], references: [id], onDelete: SetNull)
+  toOwner        User     @relation("DelegationToOwner", fields: [toOwnerId], references: [id], onDelete: Restrict)
+  actor          User     @relation("DelegationActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([taskId, occurredAt])
+  @@index([toOwnerId, occurredAt])
+  @@map("delegations")
+}
+
+model ContributorRequest {
+  id            String    @id @default(uuid()) @db.Uuid
+  taskId        String    @map("task_id") @db.Uuid
+  requestedById String    @map("requested_by") @db.Uuid
+  requestedOfId String    @map("requested_of") @db.Uuid
+  question      String?
+  neededBy      DateTime? @map("needed_by")
+  respondedAt   DateTime? @map("responded_at")
+  responseNote  String?   @map("response_note")
+  isApproval    Boolean   @default(false) @map("is_approval")
+  approved      Boolean?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  task          Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  requestedBy   User      @relation("ContributorRequestedBy", fields: [requestedById], references: [id], onDelete: Restrict)
+  requestedOf   User      @relation("ContributorRequestedOf", fields: [requestedOfId], references: [id], onDelete: Restrict)
+
+  @@index([requestedOfId, respondedAt])
+  @@index([taskId, createdAt])
+  @@map("contributor_requests")
+}
+
+model AuditLog {
+  id                 String   @id @default(uuid()) @db.Uuid
+  tenantId           String   @map("tenant_id") @db.Uuid
+  actorId            String?  @map("actor_id") @db.Uuid
+  entityType         String   @map("entity_type")
+  entityId           String   @map("entity_id")
+  eventType          String   @map("event_type")
+  previousState      Json?    @map("previous_state")
+  newState           Json?    @map("new_state")
+  payloadHash        String?  @map("payload_hash")
+  applicationVersion String?  @map("application_version")
+  occurredAt         DateTime @default(now()) @map("occurred_at")
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  actor              User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, entityType, entityId, occurredAt])
   @@index([tenantId, eventType, occurredAt])
+  @@map("audit_log")
 }
