@@ -108,6 +108,7 @@ test('a first Veeva rejection creates a task', async () => {
   assert.equal(result.externalRef, 'DOC-99812');
   assert.equal(result.category, 'regulatory');
   assert.equal(result.ownerId, 'user-reg');
+  assert.equal(result.status, 'open');
 });
 
 test('a Veeva reminder in a new thread folds by document ID', async () => {
@@ -239,7 +240,7 @@ test('out-of-office never creates a task', async () => {
   assert.equal(result.reason, 'auto_reply');
 });
 
-test('unroutable mail goes to triage instead of a guess', async () => {
+test('unroutable mail with no study goes to triage instead of a guess', async () => {
   const result = await routeEvent(
     {
       gmailMessageId: 'm6',
@@ -253,7 +254,26 @@ test('unroutable mail goes to triage instead of a guess', async () => {
 
   assert.equal(result.action, 'create');
   assert.equal(result.status, 'triage');
+  assert.equal(result.ownerId, null);
   assert.equal(result.dedupKey, null);
+});
+
+test('a protocol number alone does not auto-route human mail', async () => {
+  const result = await routeEvent(
+    {
+      gmailMessageId: 'm7',
+      gmailThreadId: 't8',
+      subject: 'Question about ABC-101'
+    },
+    null,
+    STUDY,
+    makeDb()
+  );
+
+  assert.equal(result.action, 'create');
+  assert.equal(result.status, 'triage');
+  assert.equal(result.category, 'general');
+  assert.equal(result.ownerId, null);
 });
 
 test('a reminder escalates but never restarts the clock', () => {
