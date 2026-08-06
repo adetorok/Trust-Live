@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 function formatDueDate(value) {
+  if (!value) return 'Not recorded';
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -31,6 +32,12 @@ const initialForm = {
   subject: '[NOVA-22] Monitoring follow-up CASE-204',
   body: 'Please provide the completed monitoring follow-up response within three business days.'
 };
+
+const closedStatuses = new Set([
+  'COMPLETED',
+  'CLOSED_NO_ACTION',
+  'CANCELLED'
+]);
 
 function App() {
   const [workItems, setWorkItems] = useState([]);
@@ -63,14 +70,23 @@ function App() {
 
   const metrics = useMemo(() => {
     const now = Date.now();
-    const openItems = workItems.filter((item) => item.status !== 'COMPLETED');
+    const openItems = workItems.filter(
+      (item) => !closedStatuses.has(item.status)
+    );
+
     return {
       open: openItems.length,
-      overdue: openItems.filter((item) => new Date(item.resolutionDueAt).getTime() < now).length,
-      waiting: openItems.filter((item) => item.status.startsWith('WAITING')).length,
-      studies: new Set(openItems.map((item) => item.study)).size,
-      sensitive: openItems.filter((item) => item.potentialSensitiveData).length,
-      reminders: workItems.reduce((sum, item) => sum + item.reminderCount, 0)
+      overdue: openItems.filter(
+        (item) => new Date(item.resolutionDueAt).getTime() < now
+      ).length,
+      replied: openItems.filter((item) => item.firstReplyAt).length,
+      sensitive: openItems.filter(
+        (item) => item.potentialSensitiveData
+      ).length,
+      reminders: workItems.reduce(
+        (sum, item) => sum + item.reminderCount,
+        0
+      )
     };
   }, [workItems]);
 
@@ -101,7 +117,10 @@ function App() {
     setBusy(true);
     try {
       await api('/api/demo/reset', { method: 'POST' });
-      setNotice({ outcome: 'RESET', reason: 'Demo data restored to its starting state.' });
+      setNotice({
+        outcome: 'RESET',
+        reason: 'Demo data restored to its starting state.'
+      });
       await refresh();
     } catch (resetError) {
       setError(resetError.message);
@@ -111,23 +130,44 @@ function App() {
   }
 
   async function reassign(item) {
-    const assignedTo = item.owner === 'Jane Smith' ? 'Matt Jones' : 'Jane Smith';
+    const assignedTo = item.owner === 'Jane Smith'
+      ? 'Matt Jones'
+      : 'Jane Smith';
     setBusy(true);
     try {
       await api(`/api/work-items/${item.id}/reassign`, {
         method: 'POST',
         body: JSON.stringify({
           assignedTo,
-          reason: 'Demo internal delegation — organizational SLA remains active'
+          reason: 'Demo ownership transfer — one organizational clock remains active'
         })
       });
       setNotice({
         outcome: 'REASSIGNED',
-        reason: `${item.id} moved from ${item.owner} to ${assignedTo}; the original SLA did not reset.`
+        reason: `${item.id} moved from ${item.owner} to ${assignedTo}; the original clock did not reset.`
       });
       await refresh();
     } catch (reassignError) {
       setError(reassignError.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function detectMailboxReply(item) {
+    setBusy(true);
+    try {
+      const result = await api(
+        `/api/work-items/${item.id}/simulate-mailbox-reply`,
+        { method: 'POST' }
+      );
+      setNotice({
+        outcome: result.outcome,
+        reason: `${item.id}: an outbound human reply was found in the Sent mailbox. Resolution remains open.`
+      });
+      await refresh();
+    } catch (replyError) {
+      setError(replyError.message);
     } finally {
       setBusy(false);
     }
@@ -140,7 +180,10 @@ function App() {
         method: 'POST',
         body: JSON.stringify({ status: 'COMPLETED' })
       });
-      setNotice({ outcome: 'COMPLETED', reason: `${item.id} was completed and its resolution clock stopped.` });
+      setNotice({
+        outcome: 'COMPLETED',
+        reason: `${item.id} was completed and its resolution milestone was recorded.`
+      });
       await refresh();
     } catch (completeError) {
       setError(completeError.message);
@@ -156,22 +199,22 @@ function App() {
           <article className="metric-card">
             <span>Open work</span>
             <strong>{metrics.open}</strong>
-            <small>Across active studies</small>
+            <small>Team-level, across studies</small>
           </article>
           <article className="metric-card critical">
             <span>Overdue</span>
             <strong>{metrics.overdue}</strong>
-            <small>Needs review now</small>
+            <small>Organizational resolution target</small>
           </article>
           <article className="metric-card">
-            <span>Repeated reminders</span>
-            <strong>{metrics.reminders}</strong>
-            <small>Linked without duplicate tasks</small>
+            <span>First replies detected</span>
+            <strong>{metrics.replied}</strong>
+            <small>Read from the actual mailbox</small>
           </article>
           <article className="metric-card warning">
             <span>Privacy review</span>
             <strong>{metrics.sensitive}</strong>
-            <small>Potential sensitive data detected</small>
+            <small>Prohibited subject data detected</small>
           </article>
         </section>
 
@@ -179,16 +222,35 @@ function App() {
           <div className="queue-heading">
             <div>
               <p className="eyebrow">Actionable communications</p>
-              <h2>{activeView === 'coordinator' ? 'Due and assigned work' : 'Site-wide operational risk'}</h2>
+              <h2>
+                {activeView === 'coordinator'
+                  ? 'Due and accountable work'
+                  : 'Site-wide operational risk'}
+              </h2>
             </div>
             <div className="heading-actions">
-              <button className="secondary-action" onClick={() => setActivePage('simulator')}>Add test communication</button>
-              <button className="secondary-action" onClick={resetDemo} disabled={busy}>Reset demo</button>
+              <button
+                className="secondary-action"
+                onClick={() => setActivePage('simulator')}
+              >
+                Add test communication
+              </button>
+              <button
+                className="secondary-action"
+                onClick={resetDemo}
+                disabled={busy}
+              >
+                Reset demo
+              </button>
             </div>
           </div>
 
-          {loading && <p className="state-message">Loading work queue…</p>}
-          {error && <p className="state-message error">{error}</p>}
+          {loading && (
+            <p className="state-message">Loading work queue…</p>
+          )}
+          {error && (
+            <p className="state-message error">{error}</p>
+          )}
 
           {!loading && !error && (
             <div className="work-table" role="table" aria-label="Work items">
@@ -196,19 +258,30 @@ function App() {
                 <span>Work item</span>
                 <span>Study / source</span>
                 <span>Owner</span>
-                <span>Response due</span>
+                <span>First reply</span>
                 <span>Status</span>
                 <span>Actions</span>
               </div>
               {workItems.map((item) => (
-                <article className={`work-row ${item.potentialSensitiveData ? 'privacy-row' : ''}`} role="row" key={item.id}>
+                <article
+                  className={`work-row ${item.potentialSensitiveData ? 'privacy-row' : ''}`}
+                  role="row"
+                  key={item.id}
+                >
                   <div>
                     <strong>{item.title}</strong>
                     <small>
                       {item.id} · {label(item.category)}
-                      {item.externalReference ? ` · ${item.externalReference}` : ''}
+                      {item.externalReference
+                        ? ` · ${item.externalReference}`
+                        : ''}
                     </small>
-                    {item.reminderCount > 0 && <em>{item.reminderCount} reminder linked to this work item</em>}
+                    {item.reminderCount > 0 && (
+                      <em>
+                        {item.reminderCount} reminder linked; no duplicate task
+                      </em>
+                    )}
+                    <small>{item.sourceEventCount} source event(s)</small>
                   </div>
                   <div>
                     <strong>{item.study}</strong>
@@ -216,15 +289,46 @@ function App() {
                   </div>
                   <div>
                     <span>{item.owner}</span>
-                    <small>Accountable: {item.accountableOwner}</small>
+                    <small>Accountable owner</small>
                   </div>
-                  <time dateTime={item.firstResponseDueAt}>{formatDueDate(item.firstResponseDueAt)}</time>
-                  <span className={`status status-${item.status.toLowerCase()}`}>{label(item.status)}</span>
+                  <div>
+                    <strong>
+                      {item.firstReplyAt
+                        ? 'Detected'
+                        : formatDueDate(item.firstResponseDueAt)}
+                    </strong>
+                    <small>
+                      {item.firstReplyAt
+                        ? formatDueDate(item.firstReplyAt)
+                        : 'Reply due'}
+                    </small>
+                  </div>
+                  <span className={`status status-${item.status.toLowerCase()}`}>
+                    {label(item.status)}
+                  </span>
                   <div className="row-actions">
-                    {item.status !== 'COMPLETED' && (
+                    {!closedStatuses.has(item.status) && (
                       <>
-                        <button onClick={() => reassign(item)} disabled={busy}>Reassign</button>
-                        <button onClick={() => complete(item)} disabled={busy}>Complete</button>
+                        <button
+                          onClick={() => reassign(item)}
+                          disabled={busy}
+                        >
+                          Transfer owner
+                        </button>
+                        {!item.firstReplyAt && (
+                          <button
+                            onClick={() => detectMailboxReply(item)}
+                            disabled={busy}
+                          >
+                            Detect Gmail reply
+                          </button>
+                        )}
+                        <button
+                          onClick={() => complete(item)}
+                          disabled={busy}
+                        >
+                          Complete
+                        </button>
                       </>
                     )}
                   </div>
@@ -244,8 +348,9 @@ function App() {
           <p className="eyebrow">No Google access required</p>
           <h2>Inbox simulator</h2>
           <p className="section-copy">
-            Run realistic clinical-trial communications through the same routing, privacy screening,
-            deduplication, assignment, and SLA workflow that the Gmail integration will use later.
+            Run realistic clinical-trial communications through deterministic
+            routing, privacy screening, strict deduplication, ownership, and the
+            single organizational clock that the Gmail poller will use later.
           </p>
           <div className="scenario-grid">
             {demoMessages.map((message) => (
@@ -277,7 +382,10 @@ function App() {
             <input
               type="email"
               value={form.from}
-              onChange={(event) => setForm({ ...form, from: event.target.value })}
+              onChange={(event) => setForm({
+                ...form,
+                from: event.target.value
+              })}
               required
             />
           </label>
@@ -285,7 +393,10 @@ function App() {
             Subject
             <input
               value={form.subject}
-              onChange={(event) => setForm({ ...form, subject: event.target.value })}
+              onChange={(event) => setForm({
+                ...form,
+                subject: event.target.value
+              })}
               required
             />
           </label>
@@ -294,14 +405,23 @@ function App() {
             <textarea
               rows="8"
               value={form.body}
-              onChange={(event) => setForm({ ...form, body: event.target.value })}
+              onChange={(event) => setForm({
+                ...form,
+                body: event.target.value
+              })}
               required
             />
           </label>
-          <button className="primary-action" type="submit" disabled={busy}>
-            {busy ? 'Processing…' : 'Process into accountable work'}
+          <button
+            className="primary-action"
+            type="submit"
+            disabled={busy}
+          >
+            {busy ? 'Processing…' : 'Process source event'}
           </button>
-          <small className="form-note">The demo never stores an unredacted raw email body.</small>
+          <small className="form-note">
+            The proof build stores only redacted text. It has no subject registry.
+          </small>
         </form>
       </section>
     );
@@ -341,15 +461,30 @@ function App() {
           <div className="brand-subtitle">Clinical Site Operations</div>
         </div>
         <nav aria-label="Primary navigation">
-          <button className={`nav-item ${activePage === 'queue' ? 'active' : ''}`} onClick={() => setActivePage('queue')}>Work queue</button>
-          <button className={`nav-item ${activePage === 'simulator' ? 'active' : ''}`} onClick={() => setActivePage('simulator')}>Inbox simulator</button>
-          <button className={`nav-item ${activePage === 'audit' ? 'active' : ''}`} onClick={() => setActivePage('audit')}>Audit history</button>
+          <button
+            className={`nav-item ${activePage === 'queue' ? 'active' : ''}`}
+            onClick={() => setActivePage('queue')}
+          >
+            Work queue
+          </button>
+          <button
+            className={`nav-item ${activePage === 'simulator' ? 'active' : ''}`}
+            onClick={() => setActivePage('simulator')}
+          >
+            Inbox simulator
+          </button>
+          <button
+            className={`nav-item ${activePage === 'audit' ? 'active' : ''}`}
+            onClick={() => setActivePage('audit')}
+          >
+            Audit history
+          </button>
           <button className="nav-item" disabled>Studies</button>
           <button className="nav-item" disabled>Rules &amp; SLAs</button>
         </nav>
         <div className="pilot-badge">
           <strong>Proof mode</strong>
-          <span>No Workspace admin access needed</span>
+          <span>Polling connector deferred until site approval</span>
         </div>
       </aside>
 
@@ -358,14 +493,36 @@ function App() {
           <div>
             <p className="eyebrow">Clinical trial site accountability</p>
             <h1>
-              {activePage === 'queue' && (activeView === 'coordinator' ? 'My accountable work' : 'Site operations overview')}
-              {activePage === 'simulator' && 'Prove the workflow before connecting Gmail'}
-              {activePage === 'audit' && 'Trace every operational action'}
+              {activePage === 'queue' && (
+                activeView === 'coordinator'
+                  ? 'My accountable work'
+                  : 'Site operations overview'
+              )}
+              {activePage === 'simulator' && (
+                'Prove the workflow before connecting Gmail'
+              )}
+              {activePage === 'audit' && (
+                'Trace every operational action'
+              )}
             </h1>
           </div>
-          <div className="view-switch" role="group" aria-label="Dashboard view">
-            <button className={activeView === 'coordinator' ? 'selected' : ''} onClick={() => setActiveView('coordinator')}>Coordinator</button>
-            <button className={activeView === 'director' ? 'selected' : ''} onClick={() => setActiveView('director')}>Director</button>
+          <div
+            className="view-switch"
+            role="group"
+            aria-label="Dashboard view"
+          >
+            <button
+              className={activeView === 'coordinator' ? 'selected' : ''}
+              onClick={() => setActiveView('coordinator')}
+            >
+              Coordinator
+            </button>
+            <button
+              className={activeView === 'director' ? 'selected' : ''}
+              onClick={() => setActiveView('director')}
+            >
+              Director
+            </button>
           </div>
         </header>
 
@@ -373,8 +530,12 @@ function App() {
           <section className={`notice notice-${notice.outcome.toLowerCase()}`}>
             <strong>{label(notice.outcome)}</strong>
             <span>{notice.reason || notice.workItem?.title}</span>
-            {notice.workItem?.reminderCount > 0 && <small>Reminder count: {notice.workItem.reminderCount}</small>}
-            <button onClick={() => setNotice(null)} aria-label="Dismiss">×</button>
+            {notice.workItem?.reminderCount > 0 && (
+              <small>Reminder count: {notice.workItem.reminderCount}</small>
+            )}
+            <button onClick={() => setNotice(null)} aria-label="Dismiss">
+              ×
+            </button>
           </section>
         )}
 
@@ -384,7 +545,11 @@ function App() {
 
         <section className="principle-banner">
           <strong>Core rule:</strong>
-          <span>Every actionable communication becomes accountable work, but repeated reminders update the existing work item instead of creating duplicates.</span>
+          <span>
+            Communications are source events. They create or update one durable
+            task with one organizational clock, preserved ownership history, and
+            separate first-reply and resolution milestones.
+          </span>
         </section>
       </main>
     </div>
