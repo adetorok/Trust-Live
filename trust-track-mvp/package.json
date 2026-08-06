@@ -1,0 +1,22 @@
+{
+  "name": "trust-track-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c auto \"npm run dev --workspace @trust-track/api\" \"npm run dev --workspace @trust-track/web\"",
+    "dev:api": "npm run dev --workspace @trust-track/api",
+    "dev:web": "npm run dev --workspace @trust-track/web",
+    "build": "npm run build --workspace @trust-track/web",
+    "start": "npm run start --workspace @trust-track/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
