@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 const DEFAULT_BUSINESS_CALENDAR = {
   timeZone: 'America/New_York',
   workdayStartHour: 9,
@@ -5,47 +7,70 @@ const DEFAULT_BUSINESS_CALENDAR = {
   workdays: [1, 2, 3, 4, 5]
 };
 
-function cloneDate(value) {
-  const date = value instanceof Date ? new Date(value) : new Date(value);
+function validateCalendar(calendar) {
+  if (calendar.workdayStartHour >= calendar.workdayEndHour) {
+    throw new Error('Business-day start must be before business-day end');
+  }
+
+  if (!Array.isArray(calendar.workdays) || calendar.workdays.length === 0) {
+    throw new Error('At least one business day is required');
+  }
+}
+
+function toSiteTime(value, calendar) {
+  const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) {
     throw new Error('Invalid date supplied to SLA engine');
   }
-  return date;
+
+  const siteTime = DateTime.fromJSDate(date, { zone: 'utc' }).setZone(calendar.timeZone);
+  if (!siteTime.isValid) {
+    throw new Error(`Invalid business-calendar time zone: ${calendar.timeZone}`);
+  }
+
+  return siteTime;
 }
 
-function startOfNextWorkday(date, calendar) {
-  const next = new Date(date);
-  next.setHours(calendar.workdayStartHour, 0, 0, 0);
+function atBusinessDayStart(dateTime, calendar) {
+  return dateTime.startOf('day').set({
+    hour: calendar.workdayStartHour,
+    minute: 0,
+    second: 0,
+    millisecond: 0
+  });
+}
 
-  if (date.getHours() >= calendar.workdayEndHour) {
-    next.setDate(next.getDate() + 1);
+function nextWorkday(dateTime, calendar) {
+  let next = atBusinessDayStart(dateTime.plus({ days: 1 }), calendar);
+
+  while (!calendar.workdays.includes(next.weekday)) {
+    next = atBusinessDayStart(next.plus({ days: 1 }), calendar);
   }
 
-  while (!calendar.workdays.includes(next.getDay())) {
-    next.setDate(next.getDate() + 1);
-  }
-
-  next.setHours(calendar.workdayStartHour, 0, 0, 0);
   return next;
 }
 
-function normalizeToBusinessTime(date, calendar) {
-  const normalized = cloneDate(date);
+function normalizeToBusinessTime(value, calendar) {
+  let cursor = toSiteTime(value, calendar);
 
-  if (!calendar.workdays.includes(normalized.getDay())) {
-    return startOfNextWorkday(normalized, calendar);
+  if (!calendar.workdays.includes(cursor.weekday)) {
+    while (!calendar.workdays.includes(cursor.weekday)) {
+      cursor = cursor.plus({ days: 1 });
+    }
+    return atBusinessDayStart(cursor, calendar);
   }
 
-  if (normalized.getHours() < calendar.workdayStartHour) {
-    normalized.setHours(calendar.workdayStartHour, 0, 0, 0);
-    return normalized;
-  }
+  const dayStart = atBusinessDayStart(cursor, calendar);
+  const dayEnd = cursor.startOf('day').set({
+    hour: calendar.workdayEndHour,
+    minute: 0,
+    second: 0,
+    millisecond: 0
+  });
 
-  if (normalized.getHours() >= calendar.workdayEndHour) {
-    return startOfNextWorkday(normalized, calendar);
-  }
-
-  return normalized;
+  if (cursor < dayStart) return dayStart;
+  if (cursor >= dayEnd) return nextWorkday(cursor, calendar);
+  return cursor;
 }
 
 export function addBusinessMinutes(start, minutes, overrides = {}) {
@@ -54,29 +79,30 @@ export function addBusinessMinutes(start, minutes, overrides = {}) {
   }
 
   const calendar = { ...DEFAULT_BUSINESS_CALENDAR, ...overrides };
+  validateCalendar(calendar);
+
   let cursor = normalizeToBusinessTime(start, calendar);
   let remaining = Math.round(minutes);
 
   while (remaining > 0) {
-    const endOfDay = new Date(cursor);
-    endOfDay.setHours(calendar.workdayEndHour, 0, 0, 0);
-
-    const availableToday = Math.max(
-      0,
-      Math.floor((endOfDay.getTime() - cursor.getTime()) / 60000)
-    );
+    const endOfDay = cursor.startOf('day').set({
+      hour: calendar.workdayEndHour,
+      minute: 0,
+      second: 0,
+      millisecond: 0
+    });
+    const availableToday = Math.max(0, Math.floor(endOfDay.diff(cursor, 'minutes').minutes));
 
     if (remaining <= availableToday) {
-      cursor = new Date(cursor.getTime() + remaining * 60000);
+      cursor = cursor.plus({ minutes: remaining });
       remaining = 0;
-      break;
+    } else {
+      remaining -= availableToday;
+      cursor = nextWorkday(cursor, calendar);
     }
-
-    remaining -= availableToday;
-    cursor = startOfNextWorkday(endOfDay, calendar);
   }
 
-  return cursor;
+  return cursor.toUTC().toJSDate();
 }
 
 export function calculateSlaTargets({
@@ -86,16 +112,8 @@ export function calculateSlaTargets({
   calendar
 }) {
   return {
-    firstResponseDueAt: addBusinessMinutes(
-      receivedAt,
-      firstResponseMinutes,
-      calendar
-    ),
-    resolutionDueAt: addBusinessMinutes(
-      receivedAt,
-      resolutionMinutes,
-      calendar
-    )
+    firstResponseDueAt: addBusinessMinutes(receivedAt, firstResponseMinutes, calendar),
+    resolutionDueAt: addBusinessMinutes(receivedAt, resolutionMinutes, calendar)
   };
 }
 
