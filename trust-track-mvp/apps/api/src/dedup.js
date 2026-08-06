@@ -154,6 +154,8 @@ export async function routeEvent(event, system, study, db) {
     }
   }
 
+  const approvedRoute = Boolean(system && study);
+
   return {
     action: 'create',
     reminder: false,
@@ -165,10 +167,12 @@ export async function routeEvent(event, system, study, db) {
       externalRef,
       notifType
     }),
-    category: system?.category ?? 'general',
-    ownerId: system?.default_owner_id ?? study?.default_owner_id ?? null,
-    slaPolicyId: system?.sla_policy_id ?? null,
-    status: study ? 'open' : 'triage'
+    category: approvedRoute ? system.category : 'general',
+    ownerId: approvedRoute
+      ? system.default_owner_id ?? study.default_owner_id ?? null
+      : null,
+    slaPolicyId: approvedRoute ? system.sla_policy_id ?? null : null,
+    status: approvedRoute ? 'open' : 'triage'
   };
 }
 
