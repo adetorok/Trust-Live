@@ -1,0 +1,384 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  DIRECTOR
+  COORDINATOR
+  REGULATORY
+  PRINCIPAL_INVESTIGATOR
+  CONTRIBUTOR
+  AUDITOR
+}
+
+enum StudyStatus {
+  SETUP
+  ACTIVE
+  PAUSED
+  CLOSEOUT
+  CLOSED
+}
+
+enum SourceType {
+  EXTERNAL_PERSON
+  AUTOMATED_SYSTEM
+  INTERNAL_PERSON
+  MILESTONE
+  MANUAL
+}
+
+enum OperationalCategory {
+  DATA_MANAGEMENT
+  REGULATORY_IRB
+  IRT_DRUG_SUPPLY
+  CENTRAL_LAB
+  SAFETY
+  MONITORING
+  STUDY_STARTUP
+  TRAINING
+  PROTOCOL_AMENDMENT
+  RECRUITMENT
+  PARTICIPANT_VISIT_OPERATIONS
+  VENDOR_SUPPORT
+  FINANCE
+  DOCUMENT_REQUEST
+  GENERAL_STUDY_COMMUNICATION
+}
+
+enum WorkItemStatus {
+  NEW
+  PENDING_SENSITIVE_DATA_REVIEW
+  UNASSIGNED
+  ASSIGNED
+  IN_PROGRESS
+  WAITING_EXTERNAL
+  WAITING_INTERNAL
+  PENDING_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+  INTERNAL
+}
+
+enum MessageKind {
+  NEW_REQUEST
+  REMINDER
+  STATUS_UPDATE
+  COMPLETION_CONFIRMATION
+  INFORMATIONAL
+  AUTO_REPLY
+}
+
+enum SensitiveDataStatus {
+  NOT_SCANNED
+  CLEAR
+  REVIEW_REQUIRED
+  REDACTED
+}
+
+enum AssignmentRole {
+  ACCOUNTABLE_OWNER
+  CURRENT_ASSIGNEE
+  CONTRIBUTOR
+  APPROVER
+}
+
+enum SlaClockType {
+  FIRST_RESPONSE
+  RESOLUTION
+  INTERNAL_CONTRIBUTOR
+}
+
+enum SlaClockStatus {
+  RUNNING
+  PAUSED
+  MET
+  BREACHED
+  CANCELLED
+}
+
+model Tenant {
+  id                   String               @id @default(cuid())
+  name                 String
+  workspaceDomain      String               @unique
+  timeZone             String               @default("America/New_York")
+  businessDayStartHour Int                  @default(9)
+  businessDayEndHour   Int                  @default(17)
+  workdays             Json
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  users                User[]
+  studies              Study[]
+  sourceOrganizations  SourceOrganization[]
+  senderRules          SenderRule[]
+  messageThreads       MessageThread[]
+  workItems            WorkItem[]
+  slaPolicies          SlaPolicy[]
+  auditEvents          AuditEvent[]
+}
+
+model User {
+  id                         String            @id @default(cuid())
+  tenantId                   String
+  email                      String
+  fullName                   String
+  role                       UserRole
+  googleSubject              String?
+  isActive                   Boolean           @default(true)
+  createdAt                  DateTime          @default(now())
+  updatedAt                  DateTime          @updatedAt
+  tenant                     Tenant            @relation(fields: [tenantId], references: [id])
+  accountableWorkItems       WorkItem[]        @relation("AccountableOwner")
+  assignedWorkItems          WorkItem[]        @relation("CurrentAssignee")
+  approvalWorkItems          WorkItem[]        @relation("Approver")
+  defaultSenderRules         SenderRule[]       @relation("DefaultRuleOwner")
+  assignmentEventsReceived   AssignmentEvent[] @relation("AssignedUser")
+  assignmentEventsPerformed  AssignmentEvent[] @relation("AssignmentActor")
+  escalationPolicies         SlaPolicy[]        @relation("EscalationUser")
+  reviewedSensitiveData      SensitiveDataReview[]
+  auditEvents                AuditEvent[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId, role])
+}
+
+model Study {
+  id              String              @id @default(cuid())
+  tenantId        String
+  protocolNumber  String
+  title           String
+  sponsorName     String?
+  croName         String?
+  status          StudyStatus         @default(SETUP)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  tenant          Tenant              @relation(fields: [tenantId], references: [id])
+  senderRules     SenderRule[]
+  messageThreads  MessageThread[]
+  workItems       WorkItem[]
+  slaPolicies     SlaPolicy[]
+
+  @@unique([tenantId, protocolNumber])
+  @@index([tenantId, status])
+}
+
+model SourceOrganization {
+  id               String       @id @default(cuid())
+  tenantId         String
+  name             String
+  organizationType String
+  primaryDomain    String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  tenant           Tenant       @relation(fields: [tenantId], references: [id])
+  senderRules      SenderRule[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId, primaryDomain])
+}
+
+model SenderRule {
+  id                   String                @id @default(cuid())
+  tenantId             String
+  studyId              String?
+  sourceOrganizationId String?
+  defaultOwnerId       String?
+  senderEmail          String?
+  senderDomain         String?
+  subjectPattern       String?
+  sourceType           SourceType
+  category             OperationalCategory?
+  actionRequired       Boolean               @default(true)
+  defaultPriority      Int                   @default(3)
+  deduplicationConfig  Json?
+  isActive             Boolean               @default(true)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  tenant               Tenant                @relation(fields: [tenantId], references: [id])
+  study                Study?                @relation(fields: [studyId], references: [id])
+  sourceOrganization   SourceOrganization?   @relation(fields: [sourceOrganizationId], references: [id])
+  defaultOwner         User?                 @relation("DefaultRuleOwner", fields: [defaultOwnerId], references: [id])
+
+  @@index([tenantId, senderDomain])
+  @@index([tenantId, senderEmail])
+  @@index([studyId, isActive])
+}
+
+model MessageThread {
+  id               String         @id @default(cuid())
+  tenantId         String
+  studyId          String?
+  gmailThreadId    String
+  sanitizedSubject String?
+  latestMessageAt  DateTime
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  tenant           Tenant         @relation(fields: [tenantId], references: [id])
+  study            Study?         @relation(fields: [studyId], references: [id])
+  messages         MessageEvent[]
+  workItem         WorkItem?
+
+  @@unique([tenantId, gmailThreadId])
+  @@index([tenantId, latestMessageAt])
+}
+
+model MessageEvent {
+  id                      String                  @id @default(cuid())
+  threadId                String
+  gmailMessageId          String                  @unique
+  direction               MessageDirection
+  sourceType              SourceType
+  messageKind             MessageKind
+  senderDomain            String?
+  sanitizedFrom           String?
+  sanitizedSubject        String?
+  sanitizedSummary        String?
+  externalReference       String?
+  sensitiveDataStatus     SensitiveDataStatus     @default(NOT_SCANNED)
+  rawEmailContentStored   Boolean                 @default(false)
+  receivedAt              DateTime
+  createdAt               DateTime                @default(now())
+  thread                  MessageThread           @relation(fields: [threadId], references: [id])
+  sensitiveDataReview     SensitiveDataReview?
+
+  @@index([threadId, receivedAt])
+  @@index([senderDomain, receivedAt])
+  @@index([externalReference])
+}
+
+model WorkItem {
+  id                   String                @id @default(cuid())
+  tenantId             String
+  studyId              String?
+  threadId             String?               @unique
+  parentWorkItemId     String?
+  slaPolicyId          String?
+  accountableOwnerId  String?
+  currentAssigneeId    String?
+  approverId           String?
+  sourceType           SourceType
+  category             OperationalCategory
+  title                String
+  sanitizedSummary     String?
+  status               WorkItemStatus        @default(NEW)
+  priority             Int                   @default(3)
+  externalReference    String?
+  firstResponseAt      DateTime?
+  resolvedAt           DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  tenant               Tenant                @relation(fields: [tenantId], references: [id])
+  study                Study?                @relation(fields: [studyId], references: [id])
+  thread               MessageThread?        @relation(fields: [threadId], references: [id])
+  parentWorkItem       WorkItem?              @relation("WorkItemHierarchy", fields: [parentWorkItemId], references: [id])
+  childWorkItems       WorkItem[]             @relation("WorkItemHierarchy")
+  slaPolicy            SlaPolicy?            @relation(fields: [slaPolicyId], references: [id])
+  accountableOwner     User?                 @relation("AccountableOwner", fields: [accountableOwnerId], references: [id])
+  currentAssignee      User?                 @relation("CurrentAssignee", fields: [currentAssigneeId], references: [id])
+  approver             User?                 @relation("Approver", fields: [approverId], references: [id])
+  assignmentEvents     AssignmentEvent[]
+  slaClocks            SlaClock[]
+
+  @@index([tenantId, status, createdAt])
+  @@index([studyId, status])
+  @@index([currentAssigneeId, status])
+  @@index([externalReference])
+}
+
+model AssignmentEvent {
+  id             String         @id @default(cuid())
+  workItemId     String
+  assignedUserId String
+  actorId        String
+  assignmentRole AssignmentRole
+  action         String
+  reason         String?
+  occurredAt     DateTime       @default(now())
+  workItem       WorkItem       @relation(fields: [workItemId], references: [id])
+  assignedUser   User           @relation("AssignedUser", fields: [assignedUserId], references: [id])
+  actor          User           @relation("AssignmentActor", fields: [actorId], references: [id])
+
+  @@index([workItemId, occurredAt])
+  @@index([assignedUserId, occurredAt])
+}
+
+model SlaPolicy {
+  id                   String                @id @default(cuid())
+  tenantId             String
+  studyId              String?
+  escalationUserId     String?
+  name                 String
+  category             OperationalCategory?
+  firstResponseMinutes Int
+  resolutionMinutes    Int
+  pauseStatuses        Json
+  isActive             Boolean               @default(true)
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  tenant               Tenant                @relation(fields: [tenantId], references: [id])
+  study                Study?                @relation(fields: [studyId], references: [id])
+  escalationUser       User?                 @relation("EscalationUser", fields: [escalationUserId], references: [id])
+  workItems            WorkItem[]
+
+  @@index([tenantId, studyId, category, isActive])
+}
+
+model SlaClock {
+  id                 String         @id @default(cuid())
+  workItemId         String
+  clockType          SlaClockType
+  status             SlaClockStatus @default(RUNNING)
+  startedAt          DateTime
+  dueAt              DateTime
+  metAt              DateTime?
+  pausedAt           DateTime?
+  totalPausedMinutes Int            @default(0)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  workItem           WorkItem       @relation(fields: [workItemId], references: [id])
+
+  @@unique([workItemId, clockType])
+  @@index([status, dueAt])
+}
+
+model SensitiveDataReview {
+  id            String              @id @default(cuid())
+  messageEventId String             @unique
+  reviewerId    String?
+  status        SensitiveDataStatus
+  detectedTypes Json?
+  reviewerNotes String?
+  createdAt     DateTime            @default(now())
+  resolvedAt    DateTime?
+  messageEvent  MessageEvent        @relation(fields: [messageEventId], references: [id])
+  reviewer      User?               @relation(fields: [reviewerId], references: [id])
+}
+
+model AuditEvent {
+  id                   String   @id @default(cuid())
+  tenantId             String
+  actorId              String?
+  entityType           String
+  entityId             String
+  eventType            String
+  previousState        Json?
+  newState             Json?
+  sourceMessageHash    String?
+  applicationVersion   String?
+  occurredAt           DateTime @default(now())
+  tenant               Tenant   @relation(fields: [tenantId], references: [id])
+  actor                User?    @relation(fields: [actorId], references: [id])
+
+  @@index([tenantId, entityType, entityId, occurredAt])
+  @@index([tenantId, eventType, occurredAt])
+}
