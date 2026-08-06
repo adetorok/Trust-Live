@@ -255,7 +255,8 @@ function titleFor(category, message, sourceSystem) {
     GENERAL_STUDY_COMMUNICATION: 'Review and respond to study communication'
   };
 
-  return `${titles[category]} · ${sourceSystem}` || message.subject;
+  const baseTitle = titles[category] || message.subject;
+  return `${baseTitle} · ${sourceSystem}`;
 }
 
 function slaForCategory(category) {
