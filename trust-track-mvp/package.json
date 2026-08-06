@@ -4,14 +4,18 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
     "dev": "concurrently -n api,web -c auto \"npm run dev --workspace @trust-track/api\" \"npm run dev --workspace @trust-track/web\"",
     "dev:api": "npm run dev --workspace @trust-track/api",
     "dev:web": "npm run dev --workspace @trust-track/web",
     "build": "npm run build --workspace @trust-track/web",
-    "start": "npm run start --workspace @trust-track/api"
+    "start": "npm run start --workspace @trust-track/api",
+    "db:generate": "npm run generate --workspace @trust-track/database",
+    "db:migrate": "npm run migrate:dev --workspace @trust-track/database",
+    "db:studio": "npm run studio --workspace @trust-track/database"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
